@@ -2,14 +2,13 @@ import asyncio
 from logging import getLogger
 from threading import Thread
 from time import time
-from typing import List, Dict, Callable, Any
+from typing import Any, Callable, Dict, Iterable
 
 from kivy.clock import mainthread, Clock
 from kivy.event import EventDispatcher
 from kivy.uix.widget import Widget
 
 from naturtag.app import get_app
-from naturtag.models import MetaMetadata
 from naturtag.widgets import TaxonListItem, ImageMetaTile
 
 REPORT_RATE = 1/30  # Report progress to UI at 30 FPS
@@ -45,7 +44,7 @@ class BatchRunner(EventDispatcher):
         self.runner_callback = runner_callback
         self.worker_callback = worker_callback
 
-    def add_batch(self, items: List, **kwargs: Dict):
+    def add_batch(self, items: Iterable, **kwargs: Dict):
         """ Add a batch of items to the queue (from another thread)
 
         Args:

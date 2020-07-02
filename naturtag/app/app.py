@@ -79,6 +79,7 @@ class ControllerProxy:
         # Proxy properties
         self.stored_taxa = self.settings_controller.stored_taxa
         self.locale = self.settings_controller.locale
+        self.username = self.settings_controller.username
         self.metadata = self.settings_controller.metadata
         self.preferred_place_id = self.settings_controller.preferred_place_id
 

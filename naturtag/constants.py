@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from os.path import dirname, join
+from typing import Optional, Tuple
+
 from appdirs import user_data_dir
 from naturtag import __version__
 from pyinaturalist import DEFAULT_USER_AGENT
@@ -121,3 +123,7 @@ COMMON_NAME_IGNORE_TERMS = [
     'allies',
     'relatives',
 ]
+
+# Type aliases
+IntTuple = Tuple[Optional[int], Optional[int]]
+StrTuple = Tuple[Optional[str], Optional[str]]

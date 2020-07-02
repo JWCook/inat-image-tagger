@@ -2,13 +2,14 @@
 from logging import getLogger
 from os import makedirs
 from os.path import dirname
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict, List
 
 import requests_cache
 import xmltodict
 
 from pyinaturalist.node_api import (
     get_observation,
+    get_observation_species_counts,
     get_taxa,
     get_taxa_by_id,
 )
@@ -20,7 +21,7 @@ from naturtag.constants import (
     DWC_NAMESPACES,
     OBSERVATION_KEYS,
     TAXON_KEYS,
-    RANKS,
+    RANKS, StrTuple, IntTuple,
 )
 
 # Patch requests to use CachedSession for pyinaturalist API calls
@@ -29,7 +30,7 @@ requests_cache.install_cache(backend=CACHE_BACKEND, cache_name=CACHE_PATH)
 logger = getLogger().getChild(__name__)
 
 
-def get_observation_taxon(observation_id):
+def get_observation_taxon(observation_id: int) -> int:
     """ Get the current taxon ID for the given observation """
     logger.info(f'Fetching observation {observation_id}')
     obs = get_observation(observation_id)
@@ -38,15 +39,20 @@ def get_observation_taxon(observation_id):
     return obs['taxon']['id']
 
 
-def get_observation_dwc_terms(observation_id):
+def get_observation_dwc_terms(observation_id: int) -> Dict[str, str]:
     """ Get all DWC terms from an iNaturalist observation """
-    logger.info(f'Getting darwincore terms for observation {observation_id}')
+    logger.info(f'Getting Darwin Core terms for observation {observation_id}')
     obs_dwc = get_observations(id=observation_id, response_format='dwc')
     return convert_dwc_to_xmp(obs_dwc)
 
 
 # TODO: separate species, binomial, trinomial
-def get_keywords(observation_id=None, taxon_id=None, common=False, hierarchical=False):
+def get_keywords(
+    observation_id: int = None,
+    taxon_id: int = None,
+    common: bool = False,
+    hierarchical: bool = False,
+) -> List[str]:
     """ Get all taxonomic keywords for a given observation or taxon """
     min_tax_id = taxon_id or get_observation_taxon(observation_id)
     taxa = get_taxon_with_ancestors(min_tax_id)
@@ -67,7 +73,7 @@ def get_keywords(observation_id=None, taxon_id=None, common=False, hierarchical=
     return keywords
 
 
-def get_taxon_children(taxon_id):
+def get_taxon_children(taxon_id: int) -> List[Dict]:
     """ Get a taxon's children """
     logger.info(f'Fetching children of taxon {taxon_id}')
     r = get_taxa(parent_id=taxon_id)
@@ -75,12 +81,12 @@ def get_taxon_children(taxon_id):
     return r['results']
 
 
-def get_taxon_ancestors(taxon_id):
+def get_taxon_ancestors(taxon_id: int) -> List[Dict]:
     """ Get a taxon's parents """
     return get_taxon_with_ancestors(taxon_id)[:-1]
 
 
-def get_taxon_with_ancestors(taxon_id):
+def get_taxon_with_ancestors(taxon_id: int) -> List[Dict]:
     """ Get a taxon with all its parents """
     logger.info(f'Fetching parents of taxon {taxon_id}')
     r = get_taxa_by_id(taxon_id)
@@ -91,7 +97,7 @@ def get_taxon_with_ancestors(taxon_id):
 
 # TODO: This should be reorganized somehow, I don't quite like the look if it;
 #  image_metadata module depends on this module and vice versa (kinda)
-def get_taxon_and_obs_from_metadata(metadata):
+def get_taxon_and_obs_from_metadata(metadata) -> Tuple[Dict, Dict]:
     logger.info(f'Searching for matching taxon and/or observation for {metadata.image_path}')
     taxon, observation = get_observation_from_metadata(metadata)
     if not taxon and metadata.has_taxon:
@@ -101,7 +107,7 @@ def get_taxon_and_obs_from_metadata(metadata):
     return taxon, observation
 
 
-def get_observation_from_metadata(metadata):
+def get_observation_from_metadata(metadata) -> Tuple[Dict, Dict]:
     if not metadata.observation_id:
         logger.info('No observation ID specified')
         return None, None
@@ -120,7 +126,7 @@ def get_observation_from_metadata(metadata):
     return taxon, observation
 
 
-def get_taxon_from_metadata(metadata):
+def get_taxon_from_metadata(metadata) -> Optional[Dict]:
     """ Fetch taxon record from MetaMetadata object: either by ID or rank + name """
     rank, name = metadata.min_rank
     params = {'id': metadata.taxon_id} if metadata.taxon_id else {'rank': rank, 'q': name}
@@ -133,12 +139,12 @@ def get_taxon_from_metadata(metadata):
         return None
 
 
-def get_taxonomy_keywords(taxa):
+def get_taxonomy_keywords(taxa: List[Dict]) -> List[str]:
     """ Format a list of taxa into rank keywords """
     return [quote(f'taxonomy:{t["rank"]}={t["name"]}') for t in taxa]
 
 
-def get_common_keywords(taxa):
+def get_common_keywords(taxa: List[Dict]) -> List[str]:
     """ Format a list of taxa into common name keywords.
     Filters out terms that aren't useful to keep as tags
     """
@@ -150,6 +156,14 @@ def get_common_keywords(taxa):
     ]
 
 
+def get_user_taxa(username: str) -> Dict[int, int]:
+    """ Get counts of taxa observed by the user """
+    if not username:
+        return {}
+    response = get_observation_species_counts(user_login=username)
+    return {r['taxon']['id']: r['count'] for r in response['results']}
+
+
 # TODO: Also include common names in hierarchy?
 def get_hierarchical_keywords(keywords):
     hier_keywords = [keywords[0]]
@@ -158,14 +172,14 @@ def get_hierarchical_keywords(keywords):
     return hier_keywords
 
 
-def sort_taxonomy_keywords(keywords):
+def sort_taxonomy_keywords(keywords: List[str]) -> List[str]:
     """ Sort keywords by taxonomic rank, where applicable """
     def _get_rank_idx(tag):
         return get_rank_idx(tag.split(':')[-1].split('=')[0])
     return sorted(keywords, key=_get_rank_idx, reverse=True)
 
 
-def get_rank_idx(rank):
+def get_rank_idx(rank: str) -> int:
     return RANKS.index(rank) if rank in RANKS else 0
 
 
@@ -182,27 +196,24 @@ def get_inaturalist_ids(metadata):
     return taxon_id, observation_id
 
 
-def get_min_rank(metadata):
+def get_min_rank(metadata: Dict[str, str]) -> StrTuple:
     """ Get the lowest (most specific) taxonomic rank from tags, if any """
     for rank in RANKS:
         if rank in metadata:
             logger.info(f'Found minimum rank: {rank} = {metadata[rank]}')
             return rank, metadata[rank]
-    return None
+    return None, None
 
 
-def quote(s):
+def quote(s: str) -> str:
     """ Surround keyword in quotes if it contains whitespace """
     return f'"{s}"' if ' ' in s else s
 
 
-def convert_dwc_to_xmp(dwc):
+def convert_dwc_to_xmp(dwc: str) -> Dict[str, str]:
     """
     Get all DWC terms from XML content containing a SimpleDarwinRecordSet, and format them as
     XMP tags. For example: ``'dwc:species' -> 'Xmp.dwc.species'``
-
-    Aside: This is a fun project. If it involved manual XML processsing, it would no longer
-    be a fun project. Thanks, xmltodict!
     """
     # Get inner record as a dict, if it exists
     xml_dict = xmltodict.parse(dwc)
@@ -235,7 +246,7 @@ def strip_url(value: str) -> Optional[int]:
         return None
 
 
-def strip_url_by_type(value: str) -> Tuple[Optional[int], Optional[int]]:
+def strip_url_by_type(value: str) -> IntTuple:
     """ If a URL is provided containing an ID, return just the ID, and indicate whether it was a
     taxon or observation URL (if possible).
 

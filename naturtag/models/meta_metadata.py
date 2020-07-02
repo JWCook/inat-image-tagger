@@ -1,7 +1,8 @@
 from logging import getLogger
 from os.path import basename
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
+from naturtag.constants import StrTuple, IntTuple
 from naturtag.inat_metadata import get_inaturalist_ids, get_min_rank
 from naturtag.models import ImageMetadata, KeywordMetadata, KEYWORD_TAGS, HIER_KEYWORD_TAGS
 
@@ -32,7 +33,7 @@ class MetaMetadata(ImageMetadata):
         self.keyword_meta = KeywordMetadata(self.combined)
 
     @property
-    def inaturalist_ids(self) -> Tuple[Optional[int], Optional[int]]:
+    def inaturalist_ids(self) -> IntTuple:
         """ Get taxon and/or observation IDs from metadata if available """
         if self._inaturalist_ids is None:
             self._inaturalist_ids = get_inaturalist_ids(self.simplified)
@@ -47,10 +48,10 @@ class MetaMetadata(ImageMetadata):
         return self.inaturalist_ids[1]
 
     @property
-    def min_rank(self) -> Optional[str]:
+    def min_rank(self) -> StrTuple:
         """ Get the lowest (most specific) taxonomic rank from tags, if any """
         if self._min_rank is None:
-            self._min_rank = get_min_rank(self.simplified) or (None, None)
+            self._min_rank = get_min_rank(self.simplified)
         return self._min_rank
 
     @property

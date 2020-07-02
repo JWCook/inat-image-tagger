@@ -6,6 +6,7 @@ import webbrowser
 from kivy.uix.widget import Widget
 
 from kivymd.app import MDApp
+from naturtag.app import alert
 
 from naturtag.constants import PLACES_BASE_URL
 from naturtag.settings import (
@@ -109,6 +110,10 @@ class SettingsController:
     @property
     def locale(self):
         return self.inaturalist.get('locale')
+
+    @property
+    def username(self):
+        return self.inaturalist.get('username')
 
     @property
     def preferred_place_id(self):
