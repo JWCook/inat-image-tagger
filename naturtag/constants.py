@@ -114,3 +114,10 @@ MINIMAL_DWC_TERMS = [
     'dwc:taxonRank',
     'dwc:taxonID',
 ]
+
+COMMON_NAME_IGNORE_TERMS = [
+    ',',
+    ' and ',
+    'allies',
+    'relatives',
+]

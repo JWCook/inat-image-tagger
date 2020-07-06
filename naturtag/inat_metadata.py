@@ -4,7 +4,6 @@ from os import makedirs
 from os.path import dirname
 from typing import Tuple, Optional
 
-import requests
 import requests_cache
 import xmltodict
 
@@ -13,8 +12,16 @@ from pyinaturalist.node_api import (
     get_taxa,
     get_taxa_by_id,
 )
-from pyinaturalist.rest_api import get_observations  # TODO: Currently only in dev branch
-from naturtag.constants import DWC_NAMESPACES, TAXON_KEYS, OBSERVATION_KEYS, RANKS, CACHE_BACKEND, CACHE_PATH
+from pyinaturalist.rest_api import get_observations
+from naturtag.constants import (
+    CACHE_BACKEND,
+    CACHE_PATH,
+    COMMON_NAME_IGNORE_TERMS,
+    DWC_NAMESPACES,
+    OBSERVATION_KEYS,
+    TAXON_KEYS,
+    RANKS,
+)
 
 # Patch requests to use CachedSession for pyinaturalist API calls
 makedirs(dirname(CACHE_PATH), exist_ok=True)
@@ -132,13 +139,15 @@ def get_taxonomy_keywords(taxa):
 
 
 def get_common_keywords(taxa):
-    """ Format a list of taxa into common name keywords """
-    # TODO: Split comma-delimited lists, deduplicate, remove some descriptors, e.g.:
-    # ['Velvet Mites', 'Velvet Mites, Chiggers, and Relatives']
-    # -> ['Velvet Mites', 'Chiggers']
-    # [s.strip() for s in re.split(',|and', "Velvet Mites, Chiggers, and Relatives")]
-    keywords = [quote(t.get('preferred_common_name', '')) for t in taxa]
-    return list(filter(None, keywords))
+    """ Format a list of taxa into common name keywords.
+    Filters out terms that aren't useful to keep as tags
+    """
+    keywords = [t.get('preferred_common_name', '') for t in taxa]
+    return [
+        quote(kw)
+        for kw in keywords for ignore_term in COMMON_NAME_IGNORE_TERMS
+        if kw and ignore_term not in kw.lower()
+    ]
 
 
 # TODO: Also include common names in hierarchy?
@@ -197,14 +206,14 @@ def convert_dwc_to_xmp(dwc):
     """
     # Get inner record as a dict, if it exists
     xml_dict = xmltodict.parse(dwc)
-    dwr = xml_dict.get("dwr:SimpleDarwinRecordSet", {}).get("dwr:SimpleDarwinRecord")
+    dwr = xml_dict.get('dwr:SimpleDarwinRecordSet', {}).get('dwr:SimpleDarwinRecord')
     if not dwr:
         logger.warning('No SimpleDarwinRecord found')
         return {}
 
-    # iNat sometimes includes duplicate occurence IDs
-    if isinstance(dwr["dwc:occurrenceID"], list):
-        dwr["dwc:occurrenceID"] = dwr["dwc:occurrenceID"][0]
+    # iNat sometimes includes duplicate occurrence IDs
+    if isinstance(dwr['dwc:occurrenceID'], list):
+        dwr['dwc:occurrenceID'] = dwr['dwc:occurrenceID'][0]
 
     def _format_term(k):
         ns, term = k.split(':')
