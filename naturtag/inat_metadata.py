@@ -149,11 +149,11 @@ def get_common_keywords(taxa: List[Dict]) -> List[str]:
     Filters out terms that aren't useful to keep as tags
     """
     keywords = [t.get('preferred_common_name', '') for t in taxa]
-    return [
-        quote(kw)
-        for kw in keywords for ignore_term in COMMON_NAME_IGNORE_TERMS
-        if kw and ignore_term not in kw.lower()
-    ]
+
+    def is_ignored(kw):
+        return any([ignore_term in kw.lower() for ignore_term in COMMON_NAME_IGNORE_TERMS])
+
+    return [quote(kw) for kw in keywords if kw and not is_ignored(kw)]
 
 
 def get_user_taxa(username: str) -> Dict[int, int]:
