@@ -30,7 +30,7 @@ setup(
         'click-help-colors',
         'pillow>=7.0',
         'pyexiv2',
-        'pyinaturalist==0.10.0.dev206',
+        'pyinaturalist==0.11.0.dev254',
         'pyyaml',
         'requests',
         'requests-cache',

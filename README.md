@@ -70,7 +70,7 @@ of a naturalist/photographer/hobbyist's workflow; if so, there is a long list of
 I'd like to continue adding onto this.
 
 # Python Package
-See [documentation on ReadTheDocs](https://naturtag.readthedocs.io) for details on the python package.:w
+See [documentation on ReadTheDocs](https://naturtag.readthedocs.io) for details on the python package.
 
 
 # CLI
@@ -85,7 +85,19 @@ brew install exiv2  # MacOS
 
 Then, install the python package:
 ```bash
+pip install naturtag
+```
+
+Or, to install the latest development version:
+```bash
 pip install git+https://github.com/JWCook/naturtag.git
+```
+
+To run on python 3.7, you will also need the
+[`importlib-metadata`](https://docs.python.org/3/library/importlib.metadata.html)
+backport:
+```bash
+pip install importlib-metadata
 ```
 
 ## CLI Usage
