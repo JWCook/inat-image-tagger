@@ -1,3 +1,5 @@
+from logging import basicConfig
+
 import click
 from click_help_colors import HelpColorsCommand
 
@@ -35,8 +37,19 @@ def _strip_url(ctx, param, value):
 @click.option('-t', '--taxon-id', help='Taxon ID or URL', callback=_strip_url)
 @click.option('-x', '--create-xmp', is_flag=True,
               help="Create XMP sidecar file if it doesn't already exist")
+@click.option('-v', '--verbose', is_flag=True, help='Show additional debug output')
 @click.argument('image_paths', nargs=-1)
-def tag(ctx, observation_id, taxon_id, common_names, darwin_core, hierarchical, create_xmp, image_paths):
+def tag(
+    ctx,
+    observation_id,
+    taxon_id,
+    common_names,
+    darwin_core,
+    hierarchical,
+    create_xmp,
+    image_paths,
+    verbose,
+):
     """
     Get taxonomy tags from an iNaturalist observation or taxon, and write them to local image
     metadata.
@@ -111,6 +124,9 @@ def tag(ctx, observation_id, taxon_id, common_names, darwin_core, hierarchical, 
     if all([observation_id, taxon_id]):
         click.secho('Provide either a taxon or an observation', fg='red')
         ctx.exit()
+
+    if verbose:
+        basicConfig(level='DEBUG')
 
     _, keywords, metadata = tag_images(
         observation_id,

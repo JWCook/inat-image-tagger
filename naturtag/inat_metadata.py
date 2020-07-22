@@ -69,7 +69,7 @@ def get_keywords(
         keywords.append(f'inat:observation_id={observation_id}')
         keywords.append(f'dwc:catalogNumber={observation_id}')
 
-    logger.info(f'{len(keywords)} keywords generated')
+    logger.info(f'{len(keywords)} total keywords generated')
     return keywords
 
 
@@ -153,7 +153,10 @@ def get_common_keywords(taxa: List[Dict]) -> List[str]:
     def is_ignored(kw):
         return any([ignore_term in kw.lower() for ignore_term in COMMON_NAME_IGNORE_TERMS])
 
-    return [quote(kw) for kw in keywords if kw and not is_ignored(kw)]
+    common_keywords = [quote(kw) for kw in keywords if kw and not is_ignored(kw)]
+    logger.info(
+        f'{len(keywords) - len(common_keywords)} out of {len(keywords)} common names ignored')
+    return common_keywords
 
 
 def get_user_taxa(username: str) -> Dict[int, int]:
@@ -161,11 +164,12 @@ def get_user_taxa(username: str) -> Dict[int, int]:
     if not username:
         return {}
     response = get_observation_species_counts(user_login=username)
+    logger.info(f'{len(response["results"])} user taxa found')
     return {r['taxon']['id']: r['count'] for r in response['results']}
 
 
 # TODO: Also include common names in hierarchy?
-def get_hierarchical_keywords(keywords):
+def get_hierarchical_keywords(keywords: List) -> List[str]:
     hier_keywords = [keywords[0]]
     for rank_name in keywords[1:]:
         hier_keywords.append(f'{hier_keywords[-1]}|{rank_name}')
