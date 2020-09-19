@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 from appdirs import user_data_dir
 from naturtag import __version__
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.constants import RANKS
+from pyinaturalist.request_params import RANKS
 
 # Resource directories
 PKG_DIR = dirname(dirname(__file__))
