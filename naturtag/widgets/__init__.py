@@ -20,7 +20,8 @@ from naturtag.widgets.labels import HideableTooltip, TooltipLabel
 from naturtag.widgets.tabs import Tab
 from naturtag.widgets.lists import (
     SortableList,
-    SwitchListItem,
+    SwitchListItemLeft,
+    SwitchListItemRight,
     TextInputListItem,
     TaxonListItem,
     ThumbnailListItem,

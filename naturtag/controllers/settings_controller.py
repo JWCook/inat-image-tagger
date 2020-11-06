@@ -3,11 +3,11 @@ from logging import getLogger
 from typing import Tuple, List, Dict
 import webbrowser
 
+import requests_cache
 from kivy.uix.widget import Widget
-
 from kivymd.app import MDApp
-from naturtag.app import alert
 
+from naturtag.app import alert
 from naturtag.constants import PLACES_BASE_URL
 from naturtag.settings import (
     read_settings,
@@ -38,6 +38,10 @@ class SettingsController:
         )
         self.screen.dark_mode_chk.bind(active=MDApp.get_running_app().set_theme_mode)
 
+        # Bind buttons (with no persisted value)
+        self.screen.reset_default_button.bind(on_release=self.clear_settings)
+        self.screen.clear_cache_button.bind(on_release=self.clear_cache)
+
         # Control widget ids should match the options in the settings file (with suffixes)
         self.controls = {
             id.replace('_chk', '').replace('_input', ''): getattr(settings_screen, id)
@@ -54,6 +58,17 @@ class SettingsController:
         self.settings_dict.setdefault(section, {})
         self.settings_dict[section].setdefault(setting_name, value)
 
+    @staticmethod
+    def clear_cache(*args):
+        logger.info('Settings: Clearing HTTP request cache')
+        requests_cache.clear()
+        alert('Cache has been cleared')
+
+    def clear_settings(self, *args):
+        reset_defaults()
+        self.update_control_widgets()
+        alert('Settings have been reset to defaults')
+
     @property
     def stored_taxa(self) -> Tuple[List[int], List[int], Dict[int, int]]:
         return (
@@ -64,14 +79,14 @@ class SettingsController:
 
     def update_control_widgets(self):
         """ Update state of settings controls in UI with values from settings file """
-        logger.info(f'Loading settings: {self.settings_dict}')
+        logger.info(f'Settings: Loading settings: {self.settings_dict}')
         for k, section in self.settings_dict.items():
             for setting_name, value in section.items():
                 self.set_control_value(setting_name, value)
 
     def save_settings(self):
         """ Save the current state of the control widgets to settings file """
-        logger.info(f'Saving settings: {self.settings_dict}')
+        logger.info(f'Settings: Saving settings: {self.settings_dict}')
         for k, section in self.settings_dict.items():
             for setting_name in section.keys():
                 value = self.get_control_value(setting_name)
@@ -106,7 +121,7 @@ class SettingsController:
         if hasattr(control_widget, 'path'):
             return control_widget, 'path', str
         else:
-            logger.warning(f'Could not detect type for {control_widget}')
+            logger.warning(f'Settings: Could not detect type for {control_widget}')
 
     @property
     def locale(self):

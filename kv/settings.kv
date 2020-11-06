@@ -43,45 +43,63 @@
                     font_style: 'H6'
                     text: 'Common names'
                     secondary_text: 'Include common names in taxonomy keywords'
-                    SwitchListItem:
-                        id: common_names_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'cat'
+                    SwitchListItemRight:
+                        id: common_names_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Hierarchical Keywords'
                     secondary_text: 'Generate pipe-delimited hierarchical keywords'
-                    SwitchListItem:
-                        id: hierarchical_keywords_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'file-tree'
+                    SwitchListItemRight:
+                        id: hierarchical_keywords_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Darwin Core Metadata'
                     secondary_text: 'Convert taxon/observation metadata into XMP Darwin Core metadata'
-                    SwitchListItem:
-                        id: darwin_core_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'xml'
+                    SwitchListItemRight:
+                        id: darwin_core_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Create XMP Files'
                     secondary_text: "Create XMP sidecar files if they don't already exist"
-                    SwitchListItem:
-                        id: create_xmp_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'file-multiple'
+                    SwitchListItemRight:
+                        id: create_xmp_chk
 
                 OneLineListItem:
                 OneLineListItem:
-                    font_style: 'H6'
                     font_style: 'H5'
                     text: 'Display settings'
                 OneLineAvatarIconListItem:
                     text: 'Dark Mode'
-                    SwitchListItem:
-                        id: dark_mode_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'theme-light-dark'
+                    SwitchListItemRight:
+                        id: dark_mode_chk
+
+                OneLineListItem:
+                OneLineListItem:
+                    font_style: 'H5'
+                    text: 'Reset'
+                OneLineListItem:
+                OneLineAvatarListItem:
+                    id: reset_default_button
+                    text: 'Reset to defaults'
+                    IconLeft:
+                        icon: 'backup-restore'
+                ThreeLineAvatarListItem:
+                    id: clear_cache_button
+                    text: 'Clear cache'
+                    secondary_text: 'Clears all cached HTTP request data'
+                    tertiary_text: 'Cached data expires after 24 hours; use this to force a refresh before expiration'
+                    IconLeft:
+                        icon: 'backup-restore'
+
         StatusBar:
             id: status_bar

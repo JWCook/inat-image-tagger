@@ -22,7 +22,7 @@ def read_settings() -> Dict[str, Any]:
     """
     if not isfile(CONFIG_PATH):
         reset_defaults()
-    logger.info(f'Reading settings from {CONFIG_PATH}')
+    logger.info(f'Settings: Reading settings from {CONFIG_PATH}')
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
@@ -36,12 +36,12 @@ def write_settings(new_config: Dict[str, Any]):
     # First re-read current config, in case it changed on disk (manual edits)
     # And update on a per-section basis so we don't overwrite with an empty section
     settings = read_settings()
-    logger.info(f'Writing settings to {CONFIG_PATH}')
+    logger.info(f'Settings: Writing settings to {CONFIG_PATH}')
     for k, v in new_config.items():
-        logger.debug(f'Writing {k}={v}')
+        logger.debug(f'Settings: Writing {k}={v}')
         settings.setdefault(k, {})
         settings[k].update(v)
-    logger.info('Done')
+    logger.info('Settings: Done')
 
     with open(CONFIG_PATH, 'w') as f:
         yaml.safe_dump(settings, f)
@@ -49,7 +49,7 @@ def write_settings(new_config: Dict[str, Any]):
 
 def reset_defaults():
     """ Reset settings to defaults """
-    logger.info(f'Resetting {CONFIG_PATH} to defaults')
+    logger.info(f'Settings: Resetting {CONFIG_PATH} to defaults')
     makedirs(DATA_DIR, exist_ok=True)
     copyfile(DEFAULT_CONFIG_PATH, CONFIG_PATH)
 
@@ -84,7 +84,7 @@ def write_stored_taxa(stored_taxa: Dict):
     stored_taxa["frequent"] = OrderedDict(Counter(stored_taxa["history"]).most_common())
 
     logger.info(
-        f'Writing stored taxa: {len(stored_taxa["history"])} history items, '
+        f'Settings: Writing stored taxa: {len(stored_taxa["history"])} history items, '
         f'{len(stored_taxa["starred"])} starred items, '
         f'{len(stored_taxa["frequent"])} frequent items'
     )

@@ -1,7 +1,7 @@
 from typing import Union
 
 from kivy.core.clipboard import Clipboard
-from kivymd.uix.list import MDList, ILeftBody, ILeftBodyTouch, OneLineListItem
+from kivymd.uix.list import MDList, ILeftBody, ILeftBodyTouch, IRightBodyTouch, OneLineListItem
 from kivymd.uix.list import ThreeLineAvatarIconListItem
 from kivymd.uix.selectioncontrol import MDSwitch
 from kivymd.uix.textfield import MDTextFieldRound
@@ -26,7 +26,11 @@ class SortableList(MDList):
             self.add_widget(child)
 
 
-class SwitchListItem(ILeftBodyTouch, MDSwitch):
+class SwitchListItemLeft(ILeftBodyTouch, MDSwitch):
+    """ Switch that works as a list item """
+
+
+class SwitchListItemRight(IRightBodyTouch, MDSwitch):
     """ Switch that works as a list item """
 
 
