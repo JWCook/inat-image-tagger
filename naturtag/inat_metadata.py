@@ -1,4 +1,5 @@
 """ Tools to get keyword tags (e.g., for XMP metadata) from iNaturalist observations """
+from datetime import timedelta
 from logging import getLogger
 from os import makedirs
 from os.path import dirname
@@ -16,6 +17,7 @@ from pyinaturalist.node_api import (
 from pyinaturalist.rest_api import get_observations
 from naturtag.constants import (
     CACHE_BACKEND,
+    CACHE_EXPIRY_HOURS,
     CACHE_PATH,
     COMMON_NAME_IGNORE_TERMS,
     DWC_NAMESPACES,
@@ -28,7 +30,11 @@ from naturtag.constants import (
 
 # Patch requests to use CachedSession for pyinaturalist API calls
 makedirs(dirname(CACHE_PATH), exist_ok=True)
-requests_cache.install_cache(backend=CACHE_BACKEND, cache_name=CACHE_PATH)
+requests_cache.install_cache(
+    backend=CACHE_BACKEND,
+    cache_name=CACHE_PATH,
+    expire_after=timedelta(hours=CACHE_EXPIRY_HOURS),
+)
 logger = getLogger().getChild(__name__)
 
 

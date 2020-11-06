@@ -38,8 +38,10 @@ def write_settings(new_config: Dict[str, Any]):
     settings = read_settings()
     logger.info(f'Writing settings to {CONFIG_PATH}')
     for k, v in new_config.items():
+        logger.debug(f'Writing {k}={v}')
         settings.setdefault(k, {})
         settings[k].update(v)
+    logger.info('Done')
 
     with open(CONFIG_PATH, 'w') as f:
         yaml.safe_dump(settings, f)

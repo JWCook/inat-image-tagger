@@ -46,6 +46,7 @@ ALL_ATLASES = [ATLAS_APP_ICONS, ATLAS_TAXON_ICONS, ATLAS_TAXON_PHOTOS, ATLAS_LOC
 
 # Cache settings
 CACHE_PATH = join(DATA_DIR, 'inaturalist_api_cache')
+CACHE_EXPIRY_HOURS = 24
 CACHE_BACKEND = 'sqlite'
 
 # Config files
