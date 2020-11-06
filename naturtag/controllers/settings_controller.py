@@ -23,6 +23,7 @@ logger = getLogger().getChild(__name__)
 # TODO: Track whether state changed since last write; if not, don't write on close
 class SettingsController:
     """ Controller class to manage Settings screen, and reading from and writing to settings file """
+
     def __init__(self, settings_screen):
         self.screen = settings_screen
         self.settings_dict = read_settings()

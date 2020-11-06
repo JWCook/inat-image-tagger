@@ -18,7 +18,13 @@ from logging import getLogger
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
-from kivy.properties import DictProperty, StringProperty, BooleanProperty, ObjectProperty, NumericProperty
+from kivy.properties import (
+    DictProperty,
+    StringProperty,
+    BooleanProperty,
+    ObjectProperty,
+    NumericProperty,
+)
 from kivy.uix.behaviors import FocusBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
@@ -50,6 +56,7 @@ class AutocompleteSearch(MDBoxLayout, TextFieldWrapper):
     Events:
         on_selection: Called when a result is selected from the dropdown list
     """
+
     def __init__(self, text_input_kwargs=None, **kwargs):
         """
         Args:
@@ -144,9 +151,10 @@ class AutocompleteSearch(MDBoxLayout, TextFieldWrapper):
 
 
 class DropdownContainer(MDCard):
-    """ Container layout that handles positioning & sizing of contents, and wraps with
+    """Container layout that handles positioning & sizing of contents, and wraps with
     'open' and 'dismiss' functionality
     """
+
     caller = ObjectProperty()
     layout = ObjectProperty()
     view = ObjectProperty()
@@ -165,7 +173,7 @@ class DropdownContainer(MDCard):
         self.is_open = False
 
     def on_window_resize(self, *args):
-        """ When the window is resized, re-calculate properties.
+        """When the window is resized, re-calculate properties.
         If the dropdown is open, resize now; otherwise, delay until re-opened.
         """
         self._resize_complete = False
@@ -214,6 +222,7 @@ class DropdownLayout(FocusBehavior, LayoutSelectionBehavior, RecycleBoxLayout):
     Events:
         on_selection: Called when a result is selected from the dropdown list
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.register_event_type('on_selection')
@@ -227,6 +236,7 @@ class DropdownItem(RecycleDataViewBehavior, MDLabel):
     A label representing a dropdown item, which handles click events.
     Optionally contains additional metadata to associate with the item.
     """
+
     index = None
     selectable = True
     is_selected = BooleanProperty(False)
@@ -239,10 +249,10 @@ class DropdownItem(RecycleDataViewBehavior, MDLabel):
         return super().refresh_view_attrs(rv, index, data)
 
     def on_touch_down(self, touch):
-        """ Add selection on click. ``on_selection`` event is raised here instead of in
+        """Add selection on click. ``on_selection`` event is raised here instead of in
         :py:meth:`.apply_selection` in order to handle only real selection events and not
         automatic selection checks.
-         """
+        """
         if super().on_touch_down(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:
@@ -258,6 +268,7 @@ class DropdownItem(RecycleDataViewBehavior, MDLabel):
 
 class SearchInput(MDTextField):
     """ A text input field for autocomplete search """
+
     # TODO: Not yet working as intended
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """ Select an autocomplete match with the tab key """

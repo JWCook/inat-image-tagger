@@ -77,20 +77,22 @@ TAXON_KEYS = ['taxonid', 'dwc:taxonid']
 OBSERVATION_KEYS = ['observationid', 'catalognumber', 'dwc:catalognumber']
 
 # Iconic taxa, aka common taxon search categories, in the same order as shown on the iNar web UI
-ICONIC_TAXA = OrderedDict([
-    (3, 'aves'),
-    (20978, 'amphibia'),
-    (26036, 'reptilia'),
-    (40151, 'mammalia'),
-    (47178, 'actinopterygii'),
-    (47115, 'mollusca'),
-    (47119, 'arachnida'),
-    (47158, 'insecta'),
-    (47126, 'plantae'),
-    (47170, 'fungi'),
-    (48222, 'chromista'),
-    (47686, 'protozoa'),
-])
+ICONIC_TAXA = OrderedDict(
+    [
+        (3, 'aves'),
+        (20978, 'amphibia'),
+        (26036, 'reptilia'),
+        (40151, 'mammalia'),
+        (47178, 'actinopterygii'),
+        (47115, 'mollusca'),
+        (47119, 'arachnida'),
+        (47158, 'insecta'),
+        (47126, 'plantae'),
+        (47170, 'fungi'),
+        (48222, 'chromista'),
+        (47686, 'protozoa'),
+    ]
+)
 # Other not-quite-as-iconic icons to show
 ICONISH_TAXA = {**ICONIC_TAXA, 1: 'animalia', 0: 'unknown'}
 PLACEHOLDER_ICON = f'{ATLAS_APP_ICONS}/unknown'

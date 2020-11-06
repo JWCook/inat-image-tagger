@@ -23,6 +23,7 @@ class KeywordMetadata:
     """
     Container for combining, parsing, and organizing keyword metadata into relevant categories
     """
+
     def __init__(self, metadata=None, keywords=None):
         """ Initialize with full metadata or keywords only """
         self.keywords = keywords or self.get_combined_keywords(metadata)
@@ -126,6 +127,7 @@ class KeywordMetadata:
 
 def dict_to_indented_tree(d: Dict[str, Any]) -> str:
     """ Convert a dict-formatted tree into a single string, in indented tree format """
+
     def append_children(d, indent_lvl):
         subtree = ''
         for k, v in d.items():

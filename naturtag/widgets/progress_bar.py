@@ -3,13 +3,14 @@ from logging import getLogger
 from kivy.animation import Animation
 from kivymd.uix.progressbar import MDProgressBar
 
-FINISHED_COLOR = .1, .8, .1, 1
+FINISHED_COLOR = 0.1, 0.8, 0.1, 1
 REMOVED_COLOR = 0, 0, 0, 0
 logger = getLogger().getChild(__name__)
 
 
 class LoaderProgressBar(MDProgressBar):
     """ A progress bar with some extra features to sync with a BatchLoader """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.start_color = self.color
@@ -50,5 +51,3 @@ class LoaderProgressBar(MDProgressBar):
         self.color = FINISHED_COLOR
         self.event = Animation(color=REMOVED_COLOR, duration=3, t='out_expo')
         self.event.start(self)
-
-

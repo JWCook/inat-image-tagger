@@ -6,10 +6,12 @@ from threading import Thread
 
 # Set GL backend before any kivy modules are imported
 from kivy.clock import Clock
+
 os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 
 # Disable multitouch emulation before any other kivy modules are imported
 from kivy.config import Config
+
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
 from kivy.core.clipboard import Clipboard
@@ -28,7 +30,8 @@ from naturtag.constants import (
     ATLAS_APP_ICONS,
     BACKSPACE,
     ENTER,
-    F11, TRIGGER_DELAY,
+    F11,
+    TRIGGER_DELAY,
 )
 from naturtag.controllers import (
     ImageSelectionController,
@@ -45,10 +48,11 @@ logger = getLogger().getChild(__name__)
 
 
 class ControllerProxy:
-    """ The individual controllers need to talk to each other sometimes.
+    """The individual controllers need to talk to each other sometimes.
     Any such interactions go through this class so they don't talk to each other directly.
     This also just serves as documentation for these interactions so I don't lose track of them.
     """
+
     image_selection_controller = ObjectProperty()
     metadata_view_controller = ObjectProperty()
     taxon_search_controller = ObjectProperty()
@@ -99,9 +103,10 @@ class ControllerProxy:
 
 
 class NaturtagApp(MDApp, ControllerProxy):
-    """ Manages window, theme, main screen and navigation state; other application logic is
+    """Manages window, theme, main screen and navigation state; other application logic is
     handled by Controller
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bg_loop = None
@@ -118,6 +123,7 @@ class NaturtagApp(MDApp, ControllerProxy):
         # Create an event loop to be used by background loaders
         self.bg_loop = asyncio.new_event_loop()
         Thread(target=self.bg_loop.run_forever).start()
+        self.theme_cls.theme_style = 'Dark'
 
         # Init screens and store references to them
         screens = load_screens()
@@ -234,7 +240,9 @@ class NaturtagApp(MDApp, ControllerProxy):
 
         if self.screen_manager.current == HOME_SCREEN:
             if observation_id:
-                self.image_selection_controller.inputs.observation_id_input.text = str(observation_id)
+                self.image_selection_controller.inputs.observation_id_input.text = str(
+                    observation_id
+                )
                 self.image_selection_controller.inputs.taxon_id_input.text = ''
             elif taxon_id:
                 self.image_selection_controller.inputs.observation_id_input.text = ''

@@ -26,17 +26,22 @@ logger = getLogger().getChild(__name__)
 class Root(BoxLayout):
     pass
 
+
 class ImageSelectionScreen(MDScreen):
     pass
+
 
 class SettingsScreen(MDScreen):
     pass
 
+
 class MetadataViewScreen(MDScreen):
     pass
 
+
 class TaxonScreen(MDScreen):
     pass
+
 
 class ObservationScreen(MDScreen):
     pass
@@ -68,4 +73,3 @@ def load_kv(name: str):
     path = join(KV_SRC_DIR, f'{name}.kv')
     Builder.load_file(path)
     logger.debug(f'Init: Loaded {path}')
-

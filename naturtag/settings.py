@@ -15,7 +15,7 @@ logger = getLogger().getChild(__name__)
 
 
 def read_settings() -> Dict[str, Any]:
-    """  Read settings from the settings file
+    """Read settings from the settings file
 
     Returns:
         Stored config state
@@ -28,7 +28,7 @@ def read_settings() -> Dict[str, Any]:
 
 
 def write_settings(new_config: Dict[str, Any]):
-    """  Write updated settings to the settings file
+    """Write updated settings to the settings file
 
     Args:
         new_config (dict): Updated config state
@@ -55,7 +55,7 @@ def reset_defaults():
 # TODO: Is there a better file format for taxon history than just a plain text file? JSON list? sqlite?
 # TODO: Separately store loaded history, new history for session; only write (append) new history
 def read_stored_taxa() -> Dict:
-    """ Read taxon view history, starred, and frequency
+    """Read taxon view history, starred, and frequency
 
     Returns:
         Stored taxon view history, starred, and frequency
@@ -73,7 +73,7 @@ def read_stored_taxa() -> Dict:
 
 
 def write_stored_taxa(stored_taxa: Dict):
-    """ Write taxon view history to file, along with stats on most frequently viewed taxa
+    """Write taxon view history to file, along with stats on most frequently viewed taxa
 
     Args:
         Complete taxon history (including previously stored history)

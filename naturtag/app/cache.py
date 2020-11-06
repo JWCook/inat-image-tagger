@@ -15,18 +15,18 @@ from naturtag.atlas import get_resource_path_if_exists
 logger = getLogger().getChild(__name__)
 
 
-def get_any_thumbnail(source: str, size: str='small') -> str:
+def get_any_thumbnail(source: str, size: str = 'small') -> str:
     """ Get the path of a thumbnail stored inside either an atlas or the thumbnail cache """
     return get_atlas_thumbnail_if_exists(source, size) or get_thumbnail(source)
 
 
-def get_any_thumbnail_if_exists(source: str, size: str='small') -> str:
+def get_any_thumbnail_if_exists(source: str, size: str = 'small') -> str:
     """ Get the path of a thumbnail stored inside either an atlas or the thumbnail cache """
     return get_atlas_thumbnail_if_exists(source, size) or get_thumbnail_if_exists(source)
 
 
 def get_atlas_thumbnail_if_exists(source: str, size: str) -> str:
-    """ Get the path of a thumbnail stored inside an atlas, if available
+    """Get the path of a thumbnail stored inside an atlas, if available
 
     Args:
         source (str): File path or URI for image source

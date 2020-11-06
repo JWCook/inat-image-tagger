@@ -4,10 +4,11 @@ from kivymd.uix.menu import MDDropdownMenu
 
 class DropdownTextField(MDDropdownMenu):
     """ A dropdown menu class that includes basic interaction with a text input field """
+
     def __init__(self, *args, text_input=None, text_items=None, add_none_item=True, **kwargs):
         """
-         To be more explicit, this adds an extra ``text_items`` parameter for text-only items, and
-         ``text_input`` instead of ``caller``, as well as some size defaults
+        To be more explicit, this adds an extra ``text_items`` parameter for text-only items, and
+        ``text_input`` instead of ``caller``, as well as some size defaults
         """
         # Convert str list to dict, if specified
         if text_items:
@@ -47,9 +48,10 @@ class DropdownTextField(MDDropdownMenu):
 
 
 class TextFieldWrapper:
-    """ Mixin for a class that wraps a :py:class:`.MDTextField` within another layout or widget.
+    """Mixin for a class that wraps a :py:class:`.MDTextField` within another layout or widget.
     Properties set on the class will be passed along to the text field.
     """
+
     hint_text = StringProperty()
     helper_text = StringProperty()
     helper_text_mode = StringProperty()

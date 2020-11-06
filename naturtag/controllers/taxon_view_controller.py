@@ -15,6 +15,7 @@ logger = getLogger().getChild(__name__)
 
 class TaxonViewController(Controller):
     """ Controller class to manage displaying info about a selected taxon """
+
     def __init__(self, screen):
         super().__init__(screen)
 
@@ -32,7 +33,13 @@ class TaxonViewController(Controller):
         self.taxon_children = screen.taxonomy_section.ids.taxon_children
         self.basic_info = screen.basic_info_section
 
-    def select_taxon(self, taxon_obj: Taxon=None, taxon_dict: dict=None, id: int=None, if_empty: bool=False):
+    def select_taxon(
+        self,
+        taxon_obj: Taxon = None,
+        taxon_dict: dict = None,
+        id: int = None,
+        if_empty: bool = False,
+    ):
         """ Update taxon info display by either object, ID, partial record, or complete record """
         # Initialize from object, dict, or ID
         if if_empty and self.selected_taxon is not None:

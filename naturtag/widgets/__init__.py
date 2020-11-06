@@ -7,7 +7,7 @@ See widgets.kv for non-behavioral widget settings
 def truncate(text: str) -> str:
     """ Truncate a label string to not exceed maximum length """
     if len(text) > MAX_LABEL_CHARS:
-        text = text[:MAX_LABEL_CHARS - 2] + '...'
+        text = text[: MAX_LABEL_CHARS - 2] + '...'
     return text
 
 
@@ -18,7 +18,18 @@ from naturtag.widgets.buttons import StarButton, TooltipFloatingButton, TooltipI
 from naturtag.widgets.images import CachedAsyncImage, IconicTaxaIcon, ImageMetaTile
 from naturtag.widgets.labels import HideableTooltip, TooltipLabel
 from naturtag.widgets.tabs import Tab
-from naturtag.widgets.lists import SortableList, SwitchListItem, TextInputListItem, TaxonListItem, ThumbnailListItem
-from naturtag.widgets.menus import ObjectContextMenu, AutoHideMenuItem, PhotoContextMenuItem, ListContextMenuItem
+from naturtag.widgets.lists import (
+    SortableList,
+    SwitchListItem,
+    TextInputListItem,
+    TaxonListItem,
+    ThumbnailListItem,
+)
+from naturtag.widgets.menus import (
+    ObjectContextMenu,
+    AutoHideMenuItem,
+    PhotoContextMenuItem,
+    ListContextMenuItem,
+)
 from naturtag.widgets.progress_bar import LoaderProgressBar
 from naturtag.widgets.taxon_autocomplete import TaxonAutocompleteSearch

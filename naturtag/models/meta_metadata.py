@@ -12,6 +12,7 @@ logger = getLogger().getChild(__name__)
 # TODO: Extract GPS info
 class MetaMetadata(ImageMetadata):
     """ Class for parsing & organizing info derived from basic image metadata """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Define lazy-loaded properties
@@ -124,7 +125,4 @@ def simplify_keys(mapping: Dict[str, str]) -> Dict[str, str]:
     Returns:
         Dict with simplified/deduplicated keys
     """
-    return {
-        k.lower().replace('_', '').split(':')[-1]: v
-        for k, v in mapping.items()
-    }
+    return {k.lower().replace('_', '').split(':')[-1]: v for k, v in mapping.items()}

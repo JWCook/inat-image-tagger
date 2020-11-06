@@ -20,10 +20,12 @@ def glob_paths(path_patterns: List[str]) -> List[str]:
     Returns:
         Expanded list of file paths
     """
-    return list(chain.from_iterable(
-        [expanduser(path) for path in glob(pattern, recursive=True)]
-        for pattern in path_patterns
-    ))
+    return list(
+        chain.from_iterable(
+            [expanduser(path) for path in glob(pattern, recursive=True)]
+            for pattern in path_patterns
+        )
+    )
 
 
 def get_images_from_dir(dir: str, recursive: bool = False) -> List[str]:

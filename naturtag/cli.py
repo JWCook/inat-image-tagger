@@ -27,16 +27,18 @@ def _strip_url(ctx, param, value):
 
 @click.command(cls=HelpColorsCommand, help_headers_color='blue', help_options_color='cyan')
 @click.pass_context
-@click.option('-c', '--common-names', is_flag=True,
-              help='Include common names for all ranks that have them')
-@click.option('-d', '--darwin-core', is_flag=True,
-              help='Generate Darwin Core metadata')
-@click.option('-h', '--hierarchical', is_flag=True,
-              help='Generate pipe-delimited hierarchical keywords')
+@click.option(
+    '-c', '--common-names', is_flag=True, help='Include common names for all ranks that have them'
+)
+@click.option('-d', '--darwin-core', is_flag=True, help='Generate Darwin Core metadata')
+@click.option(
+    '-h', '--hierarchical', is_flag=True, help='Generate pipe-delimited hierarchical keywords'
+)
 @click.option('-o', '--observation-id', help='Observation ID or URL', callback=_strip_url)
 @click.option('-t', '--taxon-id', help='Taxon ID or URL', callback=_strip_url)
-@click.option('-x', '--create-xmp', is_flag=True,
-              help="Create XMP sidecar file if it doesn't already exist")
+@click.option(
+    '-x', '--create-xmp', is_flag=True, help="Create XMP sidecar file if it doesn't already exist"
+)
 @click.option('-v', '--verbose', is_flag=True, help='Show additional debug output')
 @click.argument('image_paths', nargs=-1)
 def tag(

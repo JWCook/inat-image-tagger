@@ -12,6 +12,7 @@ logger = getLogger().getChild(__name__)
 
 class ImageSelectionController(Controller):
     """ Controller class to manage image selector screen """
+
     def __init__(self, screen):
         super().__init__(screen)
         self.context_menu = screen.context_menu
@@ -25,8 +26,12 @@ class ImageSelectionController(Controller):
         self.context_menu.ids.view_taxon_ctx.bind(on_release=self.view_taxon)
         # self.context_menu.ids.view_observation_ctx.bind(on_release=self.view_observation)
         self.context_menu.ids.view_metadata_ctx.bind(on_release=self.view_metadata)
-        self.context_menu.ids.copy_flickr_tags_ctx.bind(on_release=lambda x: x.selected_image.copy_flickr_tags())
-        self.context_menu.ids.remove_ctx.bind(on_release=lambda x: self.remove_image(x.selected_image))
+        self.context_menu.ids.copy_flickr_tags_ctx.bind(
+            on_release=lambda x: x.selected_image.copy_flickr_tags()
+        )
+        self.context_menu.ids.remove_ctx.bind(
+            on_release=lambda x: self.remove_image(x.selected_image)
+        )
 
         # Other widget events
         self.inputs.taxon_id_input.bind(on_text_validate=self.on_taxon_id)
@@ -55,7 +60,9 @@ class ImageSelectionController(Controller):
         # Determine images to load, ignoring duplicates
         images = get_images_from_paths(paths, recursive=self.input_dict['recursive'])
         new_images = list(set(images) - set(self.file_list))
-        logger.info(f'Main: Loading {len(new_images)} ({len(images) - len(new_images)} already loaded)')
+        logger.info(
+            f'Main: Loading {len(new_images)} ({len(images) - len(new_images)} already loaded)'
+        )
         if not new_images:
             return
         self.file_list.extend(new_images)
@@ -70,6 +77,7 @@ class ImageSelectionController(Controller):
         """ A bit of a hack; uses a hidden tkinter window to open a native file chooser dialog """
         from tkinter import Tk
         from tkinter.filedialog import askopenfilenames, askdirectory
+
         Tk().withdraw()
         # Tkinter does not have a single dialog that combines directory and file selection >:[
         if dirs:
@@ -110,9 +118,7 @@ class ImageSelectionController(Controller):
     def get_state(self, *args):
         logger.info(
             'Main:',
-            f'IDs: {self.ids}\n'
-            f'Files:\n{self.file_list}\n'
-            f'Input: {self.input_dict}\n'
+            f'IDs: {self.ids}\n' f'Files:\n{self.file_list}\n' f'Input: {self.input_dict}\n',
         )
 
     def on_image_click(self, instance, touch):
@@ -125,8 +131,12 @@ class ImageSelectionController(Controller):
             self.context_menu.ref = instance
             # Enable 'view taxon/observation' menu items, if applicable
             self.context_menu.ids.view_taxon_ctx.disabled = not instance.metadata.taxon_id
-            self.context_menu.ids.view_observation_ctx.disabled = not instance.metadata.observation_id
-            self.context_menu.ids.copy_flickr_tags_ctx.disabled = not instance.metadata.keyword_meta.flickr_tags
+            self.context_menu.ids.view_observation_ctx.disabled = (
+                not instance.metadata.observation_id
+            )
+            self.context_menu.ids.copy_flickr_tags_ctx.disabled = (
+                not instance.metadata.keyword_meta.flickr_tags
+            )
         # Middle-click: remove image
         elif touch.button == 'middle':
             self.remove_image(instance)
@@ -154,7 +164,8 @@ class ImageSelectionController(Controller):
             alert(f'Select either an observation or an organism to tag images with')
             return
         selected_id = (
-            f'Observation ID: {self.input_dict["observation_id"]}' if self.input_dict['observation_id']
+            f'Observation ID: {self.input_dict["observation_id"]}'
+            if self.input_dict['observation_id']
             else f'Taxon ID: {self.input_dict["taxon_id"]}'
         )
         logger.info(f'Main: Tagging {len(self.file_list)} images with metadata for {selected_id}')

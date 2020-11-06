@@ -21,7 +21,9 @@ from naturtag.constants import (
     DWC_NAMESPACES,
     OBSERVATION_KEYS,
     TAXON_KEYS,
-    RANKS, StrTuple, IntTuple,
+    RANKS,
+    StrTuple,
+    IntTuple,
 )
 
 # Patch requests to use CachedSession for pyinaturalist API calls
@@ -145,7 +147,7 @@ def get_taxonomy_keywords(taxa: List[Dict]) -> List[str]:
 
 
 def get_common_keywords(taxa: List[Dict]) -> List[str]:
-    """ Format a list of taxa into common name keywords.
+    """Format a list of taxa into common name keywords.
     Filters out terms that aren't useful to keep as tags
     """
     keywords = [t.get('preferred_common_name', '') for t in taxa]
@@ -155,7 +157,8 @@ def get_common_keywords(taxa: List[Dict]) -> List[str]:
 
     common_keywords = [quote(kw) for kw in keywords if kw and not is_ignored(kw)]
     logger.info(
-        f'{len(keywords) - len(common_keywords)} out of {len(keywords)} common names ignored')
+        f'{len(keywords) - len(common_keywords)} out of {len(keywords)} common names ignored'
+    )
     return common_keywords
 
 
@@ -178,8 +181,10 @@ def get_hierarchical_keywords(keywords: List) -> List[str]:
 
 def sort_taxonomy_keywords(keywords: List[str]) -> List[str]:
     """ Sort keywords by taxonomic rank, where applicable """
+
     def _get_rank_idx(tag):
         return get_rank_idx(tag.split(':')[-1].split('=')[0])
+
     return sorted(keywords, key=_get_rank_idx, reverse=True)
 
 
@@ -251,14 +256,11 @@ def strip_url(value: str) -> Optional[int]:
 
 
 def strip_url_by_type(value: str) -> IntTuple:
-    """ If a URL is provided containing an ID, return just the ID, and indicate whether it was a
+    """If a URL is provided containing an ID, return just the ID, and indicate whether it was a
     taxon or observation URL (if possible).
 
     Returns:
         taxon_id, observation_id
     """
     id = strip_url(value)
-    return (
-        id if 'taxa' in value else None,
-        id if 'observation' in value else None
-    )
+    return (id if 'taxa' in value else None, id if 'observation' in value else None)

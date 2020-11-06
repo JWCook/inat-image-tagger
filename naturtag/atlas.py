@@ -77,7 +77,7 @@ def build_local_photo_atlas(dir=THUMBNAILS_DIR):
 
 
 def build_atlas(image_paths, src_x, src_y, atlas_name, padding=2, **limit_kwarg):
-    """ Build a Kivy  Kivy :py:class:`~kivy.atlas.Atlas`
+    """Build a Kivy  Kivy :py:class:`~kivy.atlas.Atlas`
 
     Args:
         image_paths (list): Paths to images and/or image directories
@@ -105,7 +105,7 @@ def build_atlas(image_paths, src_x, src_y, atlas_name, padding=2, **limit_kwarg)
 
 
 def filter_images_by_size(image_paths, max_x, max_y, min_x, min_y):
-    """ Get all images from the specified paths that are within specified dimensions.
+    """Get all images from the specified paths that are within specified dimensions.
     See also :py:func:`.get_images_from_paths`
 
     Args:
@@ -127,7 +127,7 @@ def filter_images_by_size(image_paths, max_x, max_y, min_x, min_y):
 
 
 def get_atlas_dimensions(n_images, x, y, padding=2, max_size=None, max_bins=None, max_per_bin=None):
-    """ Get the ideal dimensions of a Kivy :py:class:`~kivy.atlas.Atlas` in which to store images
+    """Get the ideal dimensions of a Kivy :py:class:`~kivy.atlas.Atlas` in which to store images
     of mostly uniform size.
     'Ideal' in this case means the smallest rectangle, with minimal wasted space, with closest to
     square x and y dimensions, and within specified limit of dimensions, # of bins, or
@@ -169,7 +169,7 @@ def get_atlas_dimensions(n_images, x, y, padding=2, max_size=None, max_bins=None
 
 
 def _max_factor(n, factor, max_size):
-    """ Return the largest factor within the provided max;
+    """Return the largest factor within the provided max;
     e.g., the most images of size n thet can fit in max_size
     """
     if max_size is None or n * factor <= max_size:

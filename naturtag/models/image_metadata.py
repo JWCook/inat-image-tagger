@@ -16,6 +16,7 @@ logger = getLogger().getChild(__name__)
 
 class ImageMetadata:
     """ Class for reading & writing basic image metadata """
+
     def __init__(self, image_path):
         self.image_path = image_path.decode() if isinstance(image_path, bytes) else image_path
         self.xmp_path = splitext(self.image_path)[0] + '.xmp'

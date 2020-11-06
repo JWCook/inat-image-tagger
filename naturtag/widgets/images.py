@@ -15,12 +15,13 @@ from naturtag.app.cache import cache_async_thumbnail
 logger = getLogger().getChild(__name__)
 
 DESELECTED_COLOR = (0, 0, 0, 0)
-SELECTED_COLOR = (0.2, 0.6, 0.6, .4)
+SELECTED_COLOR = (0.2, 0.6, 0.6, 0.4)
 
 
 class CachedAsyncImage(AsyncImage):
     """ AsyncImage which, once loaded, caches the image for future use """
-    def __init__(self, thumbnail_size: str='large', **kwargs):
+
+    def __init__(self, thumbnail_size: str = 'large', **kwargs):
         """
         Args:
             size : Size of thumbnail to cache
@@ -61,6 +62,7 @@ class CachedAsyncImage(AsyncImage):
 
 class IconicTaxaIcon(SmartTile):
     """ Icon for an iconic taxon """
+
     is_selected = BooleanProperty()
 
     def __init__(self, taxon_id, **kwargs):
@@ -71,7 +73,7 @@ class IconicTaxaIcon(SmartTile):
         self.bind(on_release=self.toggle_selection)
 
     def toggle_selection(self, *args):
-        """ Toggle between selected and deselected when clicked. The SmartTile overlay can be
+        """Toggle between selected and deselected when clicked. The SmartTile overlay can be
         conveniently repurposed as a background, since the icon is so small the overlay covers it
         """
         if self.is_selected:
@@ -84,6 +86,7 @@ class IconicTaxaIcon(SmartTile):
 
 class ImageMetaTile(SmartTileWithLabel):
     """ Class that contains an image thumbnail to display plus its associated metadata """
+
     metadata = ObjectProperty()
 
     def __init__(self, source, **kwargs):
@@ -102,6 +105,7 @@ class ImageMetaTile(SmartTileWithLabel):
 
     def set_box_color(self):
         """ Set the color of the image overlay box based on its metadata """
+
         def set_alpha(rgba, alpha):
             return rgba[:3] + [alpha]
 
@@ -111,4 +115,3 @@ class ImageMetaTile(SmartTileWithLabel):
             self.box_color = set_alpha(self.theme_cls.primary_color, 0.5)
         else:
             self.box_color = (0, 0, 0, 0.5)
-

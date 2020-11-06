@@ -4,23 +4,26 @@ from kivy_garden.contextmenu import AbstractMenuItemHoverable, ContextMenu, Cont
 
 
 class ObjectContextMenu(ContextMenu):
-    """ Context menu with a reference to an object, which can be set by an event handler on the
+    """Context menu with a reference to an object, which can be set by an event handler on the
     parent controller
     """
+
     ref = ObjectProperty()
 
 
 class AutoHideMenuItem(ButtonBehavior, ContextMenuText, AbstractMenuItemHoverable):
     """ Menu item that hides its parent menu after selecting """
+
     def on_release(self, *args):
         super().on_release()
         self.parent.hide()
 
 
 class PhotoContextMenuItem(AutoHideMenuItem):
-    """ Menu item that has a reference to an image and its metadata
+    """Menu item that has a reference to an image and its metadata
     (partly just to be more explicit/readable)
     """
+
     @property
     def selected_image(self):
         return self.parent.ref

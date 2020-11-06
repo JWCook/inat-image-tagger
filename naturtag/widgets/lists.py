@@ -13,6 +13,7 @@ from naturtag.widgets import CachedAsyncImage, Tab
 
 class SortableList(MDList):
     """ List class that can be sorted by a custom sort key """
+
     def __init__(self, sort_key=None, **kwargs):
         self.sort_key = sort_key
         super().__init__(**kwargs)
@@ -35,11 +36,12 @@ class TextInputListItem(OneLineListItem, MDTextFieldRound):
 
 class TaxonListItem(ThreeLineAvatarIconListItem):
     """ Class that displays condensed taxon info as a list item """
+
     def __init__(
-            self,
-            taxon: Union[Taxon, int, dict] = None,
-            disable_button: bool = False,
-            **kwargs,
+        self,
+        taxon: Union[Taxon, int, dict] = None,
+        disable_button: bool = False,
+        **kwargs,
     ):
         if not taxon:
             raise ValueError('Must provide either a taxon object or ID')
@@ -78,5 +80,6 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
 
 class ThumbnailListItem(CachedAsyncImage, ILeftBody):
     """ Class that contains a taxon thumbnail to be used in a list item """
+
     def __init__(self, **kwargs):
         super().__init__(thumbnail_size='small', **kwargs)

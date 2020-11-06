@@ -9,6 +9,7 @@ just has to happen on its own, separate thread.
 Requires Python 3.5+.
 """
 import os
+
 # Set GL backend before any kivy modules are imported
 os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 import asyncio
@@ -66,9 +67,10 @@ class EventLoopWorker(EventDispatcher):
         self.loop.run_forever()
 
     async def pulse(self):
-        """ Core coroutine of this asyncio event loop. Repeats a pulse message in a short interval
+        """Core coroutine of this asyncio event loop. Repeats a pulse message in a short interval
         by dispatching a Kivy event `on_pulse` with the help of `@mainthread`
         """
+
         def _pulse_messages():
             while True:
                 yield from self._pulse or self._default_pulse
@@ -103,14 +105,18 @@ class AsyncioExampleApp(App):
         """Start the asyncio event loop thread. Bound to the top button."""
         if self.event_loop_worker is not None:
             return
-        self.root.ids.btn.text = "Running the asyncio EventLoop now...\n\n\n\nNow enter a few words below."
+        self.root.ids.btn.text = (
+            "Running the asyncio EventLoop now...\n\n\n\nNow enter a few words below."
+        )
         self.event_loop_worker = EventLoopWorker()
         # make the label react to the worker's `on_pulse` event:
-        self.event_loop_worker.bind(on_pulse=lambda x, text: setattr(self.root.ids.pulse_listener, 'text', text))
+        self.event_loop_worker.bind(
+            on_pulse=lambda x, text: setattr(self.root.ids.pulse_listener, 'text', text)
+        )
         self.event_loop_worker.start()
 
     def submit_pulse_text(self, text):
-        """ Send the TextInput string over to the asyncio event loop worker.
+        """Send the TextInput string over to the asyncio event loop worker.
         use the thread safe variant to run it on the asyncio event loop:
         """
         if self.event_loop_worker is not None:

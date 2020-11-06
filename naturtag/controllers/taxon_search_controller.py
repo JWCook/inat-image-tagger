@@ -13,6 +13,7 @@ logger = getLogger().getChild(__name__)
 
 class TaxonSearchController(Controller):
     """ Controller class to manage taxon search """
+
     def __init__(self, screen):
         super().__init__(screen)
         self.search_tab = screen.search_tab

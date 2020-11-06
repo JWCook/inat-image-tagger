@@ -16,6 +16,7 @@ logger = getLogger().getChild(__name__)
 # TODO: Better name for this? Maybe 'TaxonQuickAccessController'?
 class TaxonSelectionController(Controller):
     """ Controller class to manage selecting stored taxa """
+
     def __init__(self, screen):
         super().__init__(screen)
         # Tab references
@@ -52,16 +53,23 @@ class TaxonSelectionController(Controller):
         self.user_taxa_ids = self.get_user_taxa()
 
         # Collect all the taxon IDs we need to load
-        unique_history = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[:MAX_DISPLAY_HISTORY]
+        unique_history = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[
+            :MAX_DISPLAY_HISTORY
+        ]
         starred_taxa_ids = self.starred_taxa_ids[::-1]
         top_frequent_ids = list(self.frequent_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
         top_user_ids = list(self.user_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
-        total_taxa = sum(map(len, (
-            unique_history,
-            self.starred_taxa_ids,
-            top_user_ids,
-            top_frequent_ids,
-        )))
+        total_taxa = sum(
+            map(
+                len,
+                (
+                    unique_history,
+                    self.starred_taxa_ids,
+                    top_user_ids,
+                    top_frequent_ids,
+                ),
+            )
+        )
 
         # Start progress bar with a new batch loader
         loader = TaxonBatchLoader()
@@ -73,6 +81,7 @@ class TaxonSelectionController(Controller):
                 self.taxon_history_map[item.taxon.id] = item
             for item in self.starred_taxa_list.children:
                 self.bind_star(item)
+
         loader.bind(on_complete=index_list_items)
 
         # Start loading batches of TaxonListItems

@@ -8,6 +8,7 @@ class StarButton(IconRightWidget):
     """
     Selectable icon button that optionally toggles between 'selected' and 'unselected' star icons
     """
+
     taxon_id = NumericProperty()
     is_selected = BooleanProperty()
 

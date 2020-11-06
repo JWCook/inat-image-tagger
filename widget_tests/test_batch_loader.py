@@ -6,6 +6,7 @@ from naturtag.controllers.batch_loader import BatchLoader
 
 class SleepyBatchLoader(BatchLoader):
     """ BatchLoader for testing that just sleeps """
+
     def __init__(self, **kwargs):
         super().__init__(worker_callback=self.yawn, **kwargs)
 
@@ -25,7 +26,7 @@ async def test_loader(self):
         self.progress_bar.value = value
 
     def load_complete(*args):
-        self.progress_bar.color = .1, .8, .1, 1
+        self.progress_bar.color = 0.1, 0.8, 0.1, 1
 
     loader.bind(on_progress=update_progress)
     loader.bind(on_complete=load_complete)

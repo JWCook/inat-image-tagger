@@ -53,9 +53,7 @@ class Downloader:
 
     def download_tile(self, tile):
         Logger.debug(
-            "Downloader: queue(tile) zoom={} x={} y={}".format(
-                tile.zoom, tile.tile_x, tile.tile_y
-            )
+            "Downloader: queue(tile) zoom={} x={} y={}".format(tile.zoom, tile.tile_x, tile.tile_y)
         )
         future = self.executor.submit(self._load_tile, tile)
         self._futures.append(future)

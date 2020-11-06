@@ -72,7 +72,7 @@ def get_thumbnail_hash(source: str) -> str:
 
 
 def get_thumbnail_size(size: str) -> Tuple[int, int]:
-    """ Get one of the predefined thumbnail dimensions from a size string
+    """Get one of the predefined thumbnail dimensions from a size string
 
     Args:
         size: One of: 'small', 'medium', 'large'
@@ -142,11 +142,11 @@ def generate_thumbnail_from_bytes(image_bytes, source: str, **kwargs):
 
 
 def generate_thumbnail(
-        source: Union[BinaryIO, str],
-        thumbnail_path: str,
-        fmt: str=None,
-        size: str='medium',
-        default_flip: bool=True,
+    source: Union[BinaryIO, str],
+    thumbnail_path: str,
+    fmt: str = None,
+    size: str = 'medium',
+    default_flip: bool = True,
 ):
     """
     Generate and store a thumbnail from the source image
@@ -179,7 +179,7 @@ def generate_thumbnail(
         return source
 
 
-def get_orientated_image(source, default_flip: bool=True) -> Image:
+def get_orientated_image(source, default_flip: bool = True) -> Image:
     """
     Load and rotate/transpose image according to EXIF orientation, if any. If missing orientation
     and the image was fetched from iNat, it will be vertically mirrored. (?)
@@ -199,6 +199,7 @@ def get_orientated_image(source, default_flip: bool=True) -> Image:
 def flip_all(path: str):
     """ Vertically flip all images in a directory. Mainly for debugging purposes. """
     from naturtag.image_glob import get_images_from_dir
+
     for source in get_images_from_dir(path):
         image = Image.open(source)
         image = flip(image)

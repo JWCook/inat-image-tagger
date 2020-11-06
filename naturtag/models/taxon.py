@@ -10,13 +10,14 @@ kwarg = attr.ib(default=None)
 
 @attr.s
 class Taxon:
-    """ A data class containing information about a taxon, matching the schema of ``GET /taxa``
+    """A data class containing information about a taxon, matching the schema of ``GET /taxa``
     from the iNaturalist API: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     Examples of partial records include nested ``ancestors``, ``children``, and results from
     :py:func:`get_taxa_autocomplete`
     """
+
     id: int = kwarg
     ancestry: str = kwarg
     atlas_id: int = kwarg
@@ -124,6 +125,7 @@ class Taxon:
     @property
     def child_taxa(self) -> List:
         """ Get this taxon's children as Taxon objects (in descending order of rank) """
+
         def get_child_idx(taxon):
             return get_rank_idx(taxon.rank), taxon.name
 
