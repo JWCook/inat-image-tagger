@@ -94,7 +94,7 @@ def write_stored_taxa(stored_taxa: Dict):
 
 
 def convert_int_dict(int_dict):
-    """  Convery JSOn string keys to ints """
+    """Convert JSON string keys to ints"""
     return {int(k): int(v) for k, v in int_dict.items() if _is_int(k) and _is_int(v)}
 
 

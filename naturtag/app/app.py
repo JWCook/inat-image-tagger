@@ -34,6 +34,7 @@ from naturtag.constants import (
     TRIGGER_DELAY,
 )
 from naturtag.controllers import (
+    CacheController,
     ImageSelectionController,
     MetadataViewController,
     SettingsController,
@@ -62,6 +63,7 @@ class ControllerProxy:
 
     def init_controllers(self, screens):
         # Init controllers with references to nested screen objects
+        self.cache_controller = CacheController(screens['cache'].ids)
         self.image_selection_controller = ImageSelectionController(screens[HOME_SCREEN].ids)
         self.metadata_view_controller = MetadataViewController(screens['metadata'].ids)
         self.settings_controller = SettingsController(screens['settings'].ids)
@@ -78,6 +80,8 @@ class ControllerProxy:
         self.select_taxon = self.taxon_view_controller.select_taxon
         self.select_taxon_from_photo = self.image_selection_controller.select_taxon_from_photo
         self.update_history = self.taxon_selection_controller.update_history
+        self.refresh_history = self.taxon_selection_controller.post_init
+        self.save_settings = self.settings_controller.save_settings
         self.add_control_widget = self.settings_controller.add_control_widget
 
         # Proxy properties
