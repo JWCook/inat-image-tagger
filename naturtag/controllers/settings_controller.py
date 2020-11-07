@@ -45,7 +45,7 @@ class SettingsController:
         self.screen.reset_default_button.bind(on_release=self.clear_settings)
         self.screen.clear_request_cache_button.bind(on_release=self.clear_http_cache)
         self.screen.clear_thumbnail_cache_button.bind(on_release=self.clear_thumbnail_cache)
-
+        self.screen.clear_history_button.bind(on_release=self.clear_history)
         self.screen.cache_size_output.bind(on_release=self.update_cache_sizes)
 
         # Control widget ids should match the options in the settings file (with suffixes)
@@ -64,6 +64,10 @@ class SettingsController:
         # Initialize section and setting if either have never been set before
         self.settings_dict.setdefault(section, {})
         self.settings_dict[section].setdefault(setting_name, value)
+
+    # TODO
+    def clear_history(self, *args):
+        pass
 
     def clear_http_cache(self, *args):
         logger.info('Settings: Clearing HTTP request cache')
@@ -144,6 +148,7 @@ class SettingsController:
             f'Thumbnail cache size: {num_thumbs} files totaling {thumbnail_total_size}'
         )
         hist, hist_unique = len(self._stored_taxa['history']), len(self._stored_taxa['frequent'])
+        out.tertiary_text = f'History: {hist} items ({hist_unique} unique)'
 
     @property
     def locale(self):
