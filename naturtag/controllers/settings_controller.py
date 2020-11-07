@@ -3,16 +3,12 @@ from logging import getLogger
 from typing import Tuple, List, Dict
 import webbrowser
 
-import requests_cache
-from kivy.clock import Clock
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from naturtag.app import alert
 from naturtag.constants import PLACES_BASE_URL
 from naturtag.controllers import Controller
-from naturtag.inat_metadata import get_http_cache_size
-from naturtag.thumbnails import get_thumbnail_cache_size, delete_thumbnails
 from naturtag.settings import (
     read_settings,
     write_settings,
@@ -65,11 +61,12 @@ class SettingsController(Controller):
         alert('Settings have been reset to defaults')
 
     @property
-    def stored_taxa(self) -> Tuple[List[int], List[int], Dict[int, int]]:
+    def stored_taxa(self) -> Tuple[List[int], List[int], Dict[int, int], Dict[int, int]]:
         return (
             self._stored_taxa['history'],
             self._stored_taxa['starred'],
             self._stored_taxa['frequent'],
+            self._stored_taxa['observed'],
         )
 
     def update_control_widgets(self):
@@ -117,6 +114,10 @@ class SettingsController(Controller):
             return control_widget, 'path', str
         else:
             logger.warning(f'Settings: Could not detect type for {control_widget}')
+
+    def is_observed(self, taxon_id: int):
+        """Determine if the specified taxon has been observed by the user"""
+        return taxon_id in self._stored_taxa['observed']
 
     @property
     def locale(self):

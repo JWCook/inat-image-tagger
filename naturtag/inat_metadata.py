@@ -1,4 +1,5 @@
 """ Tools to get keyword tags (e.g., for XMP metadata) from iNaturalist observations """
+from collections import OrderedDict
 from datetime import timedelta
 from logging import getLogger
 from os import makedirs
@@ -174,13 +175,14 @@ def get_common_keywords(taxa: List[Dict]) -> List[str]:
     return common_keywords
 
 
-def get_user_taxa(username: str) -> Dict[int, int]:
-    """ Get counts of taxa observed by the user """
+def get_observed_taxa(username: str, verifiable: bool = None) -> Dict[int, int]:
+    """Get counts of taxa observed by the user, ordered by number of observations, descending"""
     if not username:
         return {}
-    response = get_observation_species_counts(user_login=username)
-    logger.info(f'{len(response["results"])} user taxa found')
-    return {r['taxon']['id']: r['count'] for r in response['results']}
+    response = get_observation_species_counts(user_login=username, verifiable=verifiable)
+    logger.info(f'{len(response["results"])} user-observed taxa found')
+    observed_taxa = {r['taxon']['id']: r['count'] for r in response['results']}
+    return dict(sorted(observed_taxa.items(), key=lambda x: x[1], reverse=True))
 
 
 # TODO: Also include common names in hierarchy?
@@ -192,7 +194,7 @@ def get_hierarchical_keywords(keywords: List) -> List[str]:
 
 
 def sort_taxonomy_keywords(keywords: List[str]) -> List[str]:
-    """ Sort keywords by taxonomic rank, where applicable """
+    """Sort keywords by taxonomic rank, where applicable"""
 
     def _get_rank_idx(tag):
         return get_rank_idx(tag.split(':')[-1].split('=')[0])

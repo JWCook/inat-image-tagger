@@ -54,7 +54,6 @@ def reset_defaults():
     copyfile(DEFAULT_CONFIG_PATH, CONFIG_PATH)
 
 
-# TODO: Is there a better file format for taxon history than just a plain text file? JSON list? sqlite?
 # TODO: Separately store loaded history, new history for session; only write (append) new history
 def read_stored_taxa() -> Dict:
     """Read taxon view history, starred, and frequency
@@ -71,6 +70,7 @@ def read_stored_taxa() -> Dict:
     stored_taxa.setdefault('history', [])
     stored_taxa.setdefault('starred', [])
     stored_taxa['frequent'] = convert_int_dict(stored_taxa.get('frequent', {}))
+    stored_taxa['observed'] = convert_int_dict(stored_taxa.get('observed', {}))
     return stored_taxa
 
 
@@ -84,23 +84,24 @@ def write_stored_taxa(stored_taxa: Dict):
     stored_taxa["frequent"] = OrderedDict(Counter(stored_taxa["history"]).most_common())
 
     logger.info(
-        f'Settings: Writing stored taxa: {len(stored_taxa["history"])} history items, '
+        'Settings: Writing stored taxa: '
+        f'{len(stored_taxa["history"])} history items, '
         f'{len(stored_taxa["starred"])} starred items, '
-        f'{len(stored_taxa["frequent"])} frequent items'
+        f'{len(stored_taxa["frequent"])} frequent items, '
+        f'{len(stored_taxa["observed"])} observed items'
     )
     with open(STORED_TAXA_PATH, 'w') as f:
         json.dump(stored_taxa, f, indent=4)
     logger.info('Settings: Done')
 
 
-def convert_int_dict(int_dict):
+def convert_int_dict(int_dict) -> Dict[int, int]:
     """Convert JSON string keys to ints"""
-    return {int(k): int(v) for k, v in int_dict.items() if _is_int(k) and _is_int(v)}
+    return {try_int(k): try_int(v) for k, v in int_dict.items()}
 
 
-def _is_int(value):
+def try_int(value):
     try:
-        int(value)
-        return True
+        return int(value)
     except (TypeError, ValueError):
-        return False
+        return value

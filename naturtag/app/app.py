@@ -81,8 +81,9 @@ class ControllerProxy:
         self.select_taxon_from_photo = self.image_selection_controller.select_taxon_from_photo
         self.update_history = self.taxon_selection_controller.update_history
         self.refresh_history = self.taxon_selection_controller.post_init
-        self.save_settings = self.settings_controller.save_settings
         self.add_control_widget = self.settings_controller.add_control_widget
+        self.is_observed = self.settings_controller.is_observed
+        self.save_settings = self.settings_controller.save_settings
 
         # Proxy properties
         self.stored_taxa = self.settings_controller.stored_taxa

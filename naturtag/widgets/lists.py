@@ -1,12 +1,19 @@
 from typing import Union
 
 from kivy.core.clipboard import Clipboard
-from kivymd.uix.list import MDList, ILeftBody, ILeftBodyTouch, IRightBodyTouch, OneLineListItem
-from kivymd.uix.list import ThreeLineAvatarIconListItem
+from kivymd.uix.list import (
+    MDList,
+    IconRightWidget,
+    ILeftBody,
+    ILeftBodyTouch,
+    IRightBodyTouch,
+    OneLineListItem,
+    ThreeLineAvatarIconListItem,
+)
 from kivymd.uix.selectioncontrol import MDSwitch
 from kivymd.uix.textfield import MDTextFieldRound
 
-from naturtag.app import alert
+from naturtag.app import alert, get_app
 from naturtag.models import Taxon
 from naturtag.widgets import CachedAsyncImage, Tab
 
@@ -45,6 +52,7 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
         self,
         taxon: Union[Taxon, int, dict] = None,
         disable_button: bool = False,
+        highlight_observed: bool = True,
         **kwargs,
     ):
         if not taxon:
@@ -68,7 +76,11 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
             **kwargs,
         )
 
-        # Select the associated taxon when this list item is pressed
+        # Add icon if taxon has been observed by the user
+        print(f'{taxon.id} observed: {get_app().is_observed(taxon.id)}')
+        if highlight_observed and get_app().is_observed(taxon.id):
+            self.add_widget(IconRightWidget(icon='account-search'))
+
         self.add_widget(ThumbnailListItem(source=taxon.thumbnail_url or taxon.icon_path))
 
     def _on_touch_down(self, instance, touch):

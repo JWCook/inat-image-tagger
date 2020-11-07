@@ -2,14 +2,11 @@ from logging import getLogger
 
 import requests_cache
 from kivy.clock import Clock
-from kivymd.app import MDApp
 
 from naturtag.app import alert, get_app
 from naturtag.controllers import Controller
 from naturtag.inat_metadata import get_http_cache_size
 from naturtag.thumbnails import get_thumbnail_cache_size, delete_thumbnails
-from naturtag.settings import write_stored_taxa
-
 
 logger = getLogger(__name__)
 
@@ -30,7 +27,7 @@ class CacheController(Controller):
 
     def clear_history(self, *args):
         logger.info('Settings: Clearing history')
-        history, _, frequent = get_app().stored_taxa
+        history, _, frequent, _ = get_app().stored_taxa
         history.clear()
         frequent.clear()
 
@@ -61,5 +58,5 @@ class CacheController(Controller):
         out.secondary_text = (
             f'Thumbnail cache size: {num_thumbs} files totaling {thumbnail_total_size}'
         )
-        history, _, frequent = get_app().stored_taxa
+        history, _, frequent, _ = get_app().stored_taxa
         out.tertiary_text = f'History: {len(history)} items ({len(frequent)} unique)'
