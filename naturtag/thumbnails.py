@@ -3,7 +3,7 @@ from hashlib import md5
 from io import BytesIO, IOBase
 from os import makedirs, scandir
 from os.path import dirname, getsize, isfile, join, normpath, splitext
-from shutil import copyfileobj
+from shutil import copyfileobj, rmtree
 from logging import getLogger
 from typing import BinaryIO, Optional, Tuple, Union
 
@@ -206,8 +206,14 @@ def get_thumbnail_cache_size() -> Tuple[int, str]:
     return len(files), format_file_size(file_size)
 
 
+def delete_thumbnails():
+    """Delete call cached thumbnails"""
+    rmtree(THUMBNAILS_DIR)
+    makedirs(THUMBNAILS_DIR)
+
+
 def flip_all(path: str):
-    """ Vertically flip all images in a directory. Mainly for debugging purposes. """
+    """Vertically flip all images in a directory. Mainly for debugging purposes."""
     from naturtag.image_glob import get_images_from_dir
 
     for source in get_images_from_dir(path):
@@ -218,7 +224,7 @@ def flip_all(path: str):
 
 
 def to_monochrome(source, fmt):
-    """ Convert an image to monochrome """
+    """Convert an image to monochrome"""
     img = Image.open(source)
     img.convert(mode='1')
     img.save(source, format=fmt.replace('jpg', 'jpeg') if fmt else None)

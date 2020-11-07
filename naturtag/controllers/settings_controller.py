@@ -11,7 +11,7 @@ from kivymd.app import MDApp
 from naturtag.app import alert
 from naturtag.constants import PLACES_BASE_URL
 from naturtag.inat_metadata import get_http_cache_size
-from naturtag.thumbnails import get_thumbnail_cache_size
+from naturtag.thumbnails import get_thumbnail_cache_size, delete_thumbnails
 from naturtag.settings import (
     read_settings,
     write_settings,
@@ -65,9 +65,13 @@ class SettingsController:
         self.settings_dict.setdefault(section, {})
         self.settings_dict[section].setdefault(setting_name, value)
 
-    # TODO
     def clear_history(self, *args):
-        pass
+        logger.info('Settings: Clearing history')
+        self._stored_taxa['history'] = []
+        self._stored_taxa['frequent'] = []
+        write_stored_taxa(self._stored_taxa)
+        self.update_cache_sizes()
+        alert('History has been cleared')
 
     def clear_http_cache(self, *args):
         logger.info('Settings: Clearing HTTP request cache')
@@ -75,9 +79,11 @@ class SettingsController:
         self.update_cache_sizes()
         alert('Cache has been cleared')
 
-    # TODO
     def clear_thumbnail_cache(self, *args):
-        pass
+        logger.info('Settings: Clearing thumbnail cache')
+        delete_thumbnails()
+        self.update_cache_sizes()
+        alert('Cache has been cleared')
 
     def clear_settings(self, *args):
         reset_defaults()

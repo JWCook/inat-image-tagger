@@ -90,7 +90,7 @@ def write_stored_taxa(stored_taxa: Dict):
     )
     with open(STORED_TAXA_PATH, 'w') as f:
         json.dump(stored_taxa, f, indent=4)
-    logger.info('Done')
+    logger.info('Settings: Done')
 
 
 def convert_int_dict(int_dict):
