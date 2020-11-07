@@ -87,19 +87,30 @@
                 OneLineListItem:
                     font_style: 'H5'
                     text: 'Reset'
-                OneLineListItem:
                 OneLineAvatarListItem:
                     id: reset_default_button
                     text: 'Reset to defaults'
                     IconLeft:
                         icon: 'backup-restore'
+
+                OneLineListItem:
+                OneLineListItem:
+                    font_style: 'H5'
+                    text: 'Cache'
+                ThreeLineListItem:
+                    id: cache_size_output
                 ThreeLineAvatarListItem:
-                    id: clear_cache_button
-                    text: 'Clear cache'
-                    secondary_text: 'Clears all cached HTTP request data'
-                    tertiary_text: 'Cached data expires after 24 hours; use this to force a refresh before expiration'
+                    id: clear_request_cache_button
+                    text: 'Clear request cache'
+                    secondary_text: 'Clear all cached HTTP request data before scheduled expiration'
                     IconLeft:
-                        icon: 'backup-restore'
+                        icon: 'delete'
+                ThreeLineAvatarListItem:
+                    id: clear_thumbnail_cache_button
+                    text: 'Clear thumbnail cache'
+                    secondary_text: 'Clear all cached thumbnails'
+                    IconLeft:
+                        icon: 'delete'
 
         StatusBar:
             id: status_bar

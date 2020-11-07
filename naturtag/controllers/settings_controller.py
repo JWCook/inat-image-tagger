@@ -4,11 +4,14 @@ from typing import Tuple, List, Dict
 import webbrowser
 
 import requests_cache
+from kivy.clock import Clock
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from naturtag.app import alert
 from naturtag.constants import PLACES_BASE_URL
+from naturtag.inat_metadata import get_http_cache_size
+from naturtag.thumbnails import get_thumbnail_cache_size
 from naturtag.settings import (
     read_settings,
     write_settings,
@@ -17,7 +20,7 @@ from naturtag.settings import (
     reset_defaults,
 )
 
-logger = getLogger().getChild(__name__)
+logger = getLogger(__name__)
 
 
 # TODO: Track whether state changed since last write; if not, don't write on close
@@ -40,7 +43,10 @@ class SettingsController:
 
         # Bind buttons (with no persisted value)
         self.screen.reset_default_button.bind(on_release=self.clear_settings)
-        self.screen.clear_cache_button.bind(on_release=self.clear_cache)
+        self.screen.clear_request_cache_button.bind(on_release=self.clear_http_cache)
+        self.screen.clear_thumbnail_cache_button.bind(on_release=self.clear_thumbnail_cache)
+
+        self.screen.cache_size_output.bind(on_release=self.update_cache_sizes)
 
         # Control widget ids should match the options in the settings file (with suffixes)
         self.controls = {
@@ -48,6 +54,7 @@ class SettingsController:
             for id in settings_screen
         }
         self.update_control_widgets()
+        Clock.schedule_once(self.update_cache_sizes, 5)
 
     def add_control_widget(self, widget: Widget, setting_name: str, section: str):
         """ Add a control widget from another screen, so its state will be stored with app settings """
@@ -58,11 +65,15 @@ class SettingsController:
         self.settings_dict.setdefault(section, {})
         self.settings_dict[section].setdefault(setting_name, value)
 
-    @staticmethod
-    def clear_cache(*args):
+    def clear_http_cache(self, *args):
         logger.info('Settings: Clearing HTTP request cache')
         requests_cache.clear()
+        self.update_cache_sizes()
         alert('Cache has been cleared')
+
+    # TODO
+    def clear_thumbnail_cache(self, *args):
+        pass
 
     def clear_settings(self, *args):
         reset_defaults()
@@ -122,6 +133,17 @@ class SettingsController:
             return control_widget, 'path', str
         else:
             logger.warning(f'Settings: Could not detect type for {control_widget}')
+
+    def update_cache_sizes(self, *args):
+        """Populate 'Cache Size' sections with calculated totals"""
+        out = self.screen.cache_size_output
+
+        out.text = f'Request cache size: {get_http_cache_size()}'
+        num_thumbs, thumbnail_total_size = get_thumbnail_cache_size()
+        out.secondary_text = (
+            f'Thumbnail cache size: {num_thumbs} files totaling {thumbnail_total_size}'
+        )
+        hist, hist_unique = len(self._stored_taxa['history']), len(self._stored_taxa['frequent'])
 
     @property
     def locale(self):

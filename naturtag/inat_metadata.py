@@ -2,7 +2,7 @@
 from datetime import timedelta
 from logging import getLogger
 from os import makedirs
-from os.path import dirname
+from os.path import dirname, getsize
 from typing import Tuple, Optional, Dict, List
 
 import requests_cache
@@ -27,6 +27,7 @@ from naturtag.constants import (
     StrTuple,
     IntTuple,
 )
+from naturtag.file_utils import format_file_size
 
 # Patch requests to use CachedSession for pyinaturalist API calls
 makedirs(dirname(CACHE_PATH), exist_ok=True)
@@ -36,6 +37,11 @@ requests_cache.install_cache(
     expire_after=timedelta(hours=CACHE_EXPIRY_HOURS),
 )
 logger = getLogger().getChild(__name__)
+
+
+def get_http_cache_size() -> str:
+    """Get the current size of the HTTP request cache, in human-readable format"""
+    return format_file_size(getsize(f'{CACHE_PATH}.{CACHE_BACKEND}'))
 
 
 def get_observation_taxon(observation_id: int) -> int:
