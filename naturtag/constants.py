@@ -130,3 +130,4 @@ COMMON_NAME_IGNORE_TERMS = [
 # Type aliases
 IntTuple = Tuple[Optional[int], Optional[int]]
 StrTuple = Tuple[Optional[str], Optional[str]]
+Coordinates = Optional[Tuple[float, float]]

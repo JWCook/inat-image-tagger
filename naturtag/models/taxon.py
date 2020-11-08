@@ -19,6 +19,8 @@ class Taxon:
     """
 
     id: int = kwarg
+    partial: bool = kwarg
+
     ancestry: str = kwarg
     atlas_id: int = kwarg
     complete_rank: str = kwarg
@@ -30,7 +32,6 @@ class Taxon:
     listed_taxa_count: int = kwarg
     name: str = kwarg
     observations_count: int = kwarg
-    partial: bool = kwarg
     parent_id: int = kwarg
     rank: str = kwarg
     rank_level: int = kwarg
