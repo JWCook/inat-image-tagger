@@ -47,20 +47,23 @@ class TaxonSelectionController(Controller):
 
     async def init_stored_taxa(self):
         """Load taxon history, starred, and frequently viewed items"""
-        logger.info('Loading stored taxa')
+        logger.info('Taxon: Loading stored taxa')
         (
             self.taxon_history_ids,
             self.starred_taxa_ids,
             self.frequent_taxa_ids,
             self.observed_taxa_ids,
-        ) = get_app().stored_taxa
-        if not self.observed_taxa_ids:
+        ) = get_app().settings_controller.stored_taxa
+
+        # Refresh observed taxa, if expired
+        if get_app().settings_controller.is_observed_taxa_expired():
+            logger.info('Taxon: Observed taxa expired')
             self.refresh_observed_taxa()
 
         # Collect all the taxon IDs we need to load
         unique_history_ids = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[
             :MAX_DISPLAY_HISTORY
-                             ]
+        ]
         starred_taxa_ids = self.starred_taxa_ids[::-1]
         top_frequent_ids = list(self.frequent_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
         top_observed_ids = list(self.observed_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
@@ -103,7 +106,7 @@ class TaxonSelectionController(Controller):
             f'Taxon: Loading {len(top_observed_ids)} user-observed taxa'
             f' (from {len(self.observed_taxa_ids)} total)'
         )
-        loader.add_batch(top_observed_ids, parent=self.observed_taxa_list, highlight_observed=False)
+        loader.add_batch(top_observed_ids, parent=self.observed_taxa_list)
 
         loader.start_thread()
 
@@ -185,20 +188,18 @@ class TaxonSelectionController(Controller):
     # TODO: Only refresh if 'expired'
     def refresh_observed_taxa(self):
         """Get all user-observed taxa, if a username has been provided"""
-        username = get_app().username
+        username = get_app().settings_controller.username
         # TODO: Show this alert only when clicking on tab instead
         if not username:
             alert('Please enter iNaturalist username on Settings page')
             return {}
 
-        self.observed_taxa_ids.clear()
-        self.observed_taxa_ids.update(
-            get_observed_taxa(
-                username,
-                include_casual=get_app().inaturalist_config.get('casual_observations')
-            )
+        self.observed_taxa_ids = get_observed_taxa(
+            username,
+            include_casual=get_app().settings_controller.inaturalist.get('casual_observations'),
         )
         self.set_taxon_sort_key(self.observed_taxa_list, self.observed_taxa_ids)
+        get_app().settings_controller.update_observed_taxa(self.observed_taxa_ids)
 
     def refresh_observed_taxa_tab(self):
         """Get all user-observed taxa and reload all items into tab"""

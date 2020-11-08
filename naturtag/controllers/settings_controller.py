@@ -1,3 +1,4 @@
+from datetime import datetime
 from locale import getdefaultlocale
 from logging import getLogger
 from typing import Tuple, List, Dict
@@ -7,7 +8,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from naturtag.app import alert
-from naturtag.constants import PLACES_BASE_URL
+from naturtag.constants import OBS_CACHE_EXPIRY_HOURS, PLACES_BASE_URL
 from naturtag.controllers import Controller
 from naturtag.settings import (
     read_settings,
@@ -15,6 +16,7 @@ from naturtag.settings import (
     read_stored_taxa,
     write_stored_taxa,
     reset_defaults,
+    is_expired,
 )
 
 logger = getLogger(__name__)
@@ -118,6 +120,18 @@ class SettingsController(Controller):
     def is_observed(self, taxon_id: int):
         """Determine if the specified taxon has been observed by the user"""
         return taxon_id in self._stored_taxa['observed']
+
+    def is_observed_taxa_expired(self):
+        """Determine if local cache of user-observed taxa has expired"""
+        return is_expired(
+            self._stored_taxa.get("last_updated_observations"), OBS_CACHE_EXPIRY_HOURS
+        )
+
+    def update_observed_taxa(self, observed_taxa_ids: Dict[int, int]):
+        """Save updated user-observed taxa"""
+        self._stored_taxa["observed"] = observed_taxa_ids
+        self._stored_taxa["last_updated_observations"] = datetime.now().isoformat()
+        write_stored_taxa(self._stored_taxa)
 
     @property
     def locale(self):

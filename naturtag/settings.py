@@ -1,4 +1,6 @@
 """ Basic utilities for reading and writing settings from config files """
+from datetime import datetime
+from dateutil.parser import parse as parse_date
 from collections import Counter, OrderedDict
 from logging import getLogger
 from os import makedirs
@@ -105,3 +107,15 @@ def try_int(value):
         return int(value)
     except (TypeError, ValueError):
         return value
+
+
+def is_expired(timestamp, expiry_hours):
+    """Determine if a timestamp is older than a given expiration length"""
+    try:
+        last_updated = parse_date(timestamp)
+    except (TypeError, ValueError):
+        return True
+
+    delta = datetime.now() - last_updated
+    elapsed_hours = delta.total_seconds() / 60 / 60
+    return int(elapsed_hours) >= expiry_hours
