@@ -1,5 +1,4 @@
 """ Tools to get keyword tags (e.g., for XMP metadata) from iNaturalist observations """
-from collections import OrderedDict
 from datetime import timedelta
 from logging import getLogger
 from os import makedirs
@@ -265,20 +264,29 @@ def convert_dwc_to_xmp(dwc: str) -> Dict[str, str]:
     return {_format_term(k): v for k, v in dwr.items() if _include_term(k)}
 
 
+def get_ids_from_url(value: str) -> IntTuple:
+    """If a URL is provided containing an ID, return the taxon and/or observation ID.
+    If it's an observation, fetch its taxon ID as well.
+
+    Returns:
+        taxon_id, observation_id
+    """
+    taxon_id, observation_id = None, None
+    id = strip_url(value)
+    # TODO: Update after finishing Observation model
+    if 'observation' in value:
+        observation_id = id
+        json = get_observation(id)
+        taxon_id = json.get('taxon', {}).get('id')
+    elif 'taxa' in value:
+        taxon_id = id
+
+    return taxon_id, observation_id
+
+
 def strip_url(value: str) -> Optional[int]:
     """ If a URL is provided containing an ID, return just the ID """
     try:
         return int(value.split('/')[-1].split('-')[0]) if value else None
     except (TypeError, ValueError):
         return None
-
-
-def strip_url_by_type(value: str) -> IntTuple:
-    """If a URL is provided containing an ID, return just the ID, and indicate whether it was a
-    taxon or observation URL (if possible).
-
-    Returns:
-        taxon_id, observation_id
-    """
-    id = strip_url(value)
-    return (id if 'taxa' in value else None, id if 'observation' in value else None)

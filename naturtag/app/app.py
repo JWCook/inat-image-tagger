@@ -42,7 +42,7 @@ from naturtag.controllers import (
     TaxonSelectionController,
     TaxonViewController,
 )
-from naturtag.inat_metadata import strip_url_by_type
+from naturtag.inat_metadata import get_ids_from_url
 from naturtag.widgets import TaxonListItem
 
 logger = getLogger().getChild(__name__)
@@ -226,10 +226,9 @@ class NaturtagApp(MDApp, ControllerProxy):
         elif self.screen_manager.current == 'taxon':
             self.taxon_search_controller.reset_all_search_inputs()
 
-    # TODO: Threw this together quickly, this could be cleaned up a lot
     def current_screen_paste(self):
         value = Clipboard.paste()
-        taxon_id, observation_id = strip_url_by_type(value)
+        taxon_id, observation_id = get_ids_from_url(value)
         if taxon_id:
             self.select_taxon(id=taxon_id)
             alert(f'Taxon {taxon_id} selected')
@@ -237,15 +236,16 @@ class NaturtagApp(MDApp, ControllerProxy):
             # self.select_observation(id=observation_id)
             alert(f'Observation {observation_id} selected')
 
-        if self.screen_manager.current == HOME_SCREEN:
-            if observation_id:
-                self.image_selection_controller.inputs.observation_id_input.text = str(
-                    observation_id
-                )
-                self.image_selection_controller.inputs.taxon_id_input.text = ''
-            elif taxon_id:
-                self.image_selection_controller.inputs.observation_id_input.text = ''
-                self.image_selection_controller.inputs.taxon_id_input.text = str(taxon_id)
+        # TODO: With improved taxon & observation screen, the ID search fields may no longer be useful
+        # if self.screen_manager.current == HOME_SCREEN:
+        #     if observation_id:
+        #         self.image_selection_controller.inputs.observation_id_input.text = str(
+        #             observation_id
+        #         )
+        #         self.image_selection_controller.inputs.taxon_id_input.text = ''
+        #     elif taxon_id:
+        #         self.image_selection_controller.inputs.observation_id_input.text = ''
+        #         self.image_selection_controller.inputs.taxon_id_input.text = str(taxon_id)
 
     def update_toolbar(self, screen_name: str):
         """ Modify toolbar in-place so it can be shared by all screens """

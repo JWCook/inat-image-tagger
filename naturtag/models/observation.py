@@ -15,8 +15,7 @@ class Observation:
     @classmethod
     def from_id(cls, id: int):
         """ Lookup and create a new Observation object from an ID """
-        r = get_observation(id)
-        json = r['results'][0]
+        json = get_observation(id)
         return cls.from_dict(json)
 
     @classmethod
