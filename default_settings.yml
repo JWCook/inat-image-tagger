@@ -9,6 +9,7 @@ inaturalist:
   locale: null
   preferred_place_id: 1
   username: null
+  casual_observations: true
 metadata:
   common_names: true
   create_xmp: true

@@ -76,12 +76,11 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
             **kwargs,
         )
 
-        # Add icon if taxon has been observed by the user
-        print(f'{taxon.id} observed: {get_app().is_observed(taxon.id)}')
+        # Add thumbnail
+        self.add_widget(ThumbnailListItem(source=taxon.thumbnail_url or taxon.icon_path))
+        # Add user icon if taxon has been observed by the user
         if highlight_observed and get_app().is_observed(taxon.id):
             self.add_widget(IconRightWidget(icon='account-search'))
-
-        self.add_widget(ThumbnailListItem(source=taxon.thumbnail_url or taxon.icon_path))
 
     def _on_touch_down(self, instance, touch):
         """ Copy text on right-click """

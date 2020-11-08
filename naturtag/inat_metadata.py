@@ -175,11 +175,16 @@ def get_common_keywords(taxa: List[Dict]) -> List[str]:
     return common_keywords
 
 
-def get_observed_taxa(username: str, verifiable: bool = None) -> Dict[int, int]:
-    """Get counts of taxa observed by the user, ordered by number of observations, descending"""
+def get_observed_taxa(username: str, include_casual: bool = False) -> Dict[int, int]:
+    """Get counts of taxa observed by the user, ordered by number of observations descending"""
     if not username:
         return {}
-    response = get_observation_species_counts(user_login=username, verifiable=verifiable)
+    # Note: verifiable=False will return *only* casual observations
+    logger.info(f'Searching for user-observed taxa (casual: {include_casual})')
+    response = get_observation_species_counts(
+        user_login=username,
+        verifiable=True if include_casual else None
+    )
     logger.info(f'{len(response["results"])} user-observed taxa found')
     observed_taxa = {r['taxon']['id']: r['count'] for r in response['results']}
     return dict(sorted(observed_taxa.items(), key=lambda x: x[1], reverse=True))

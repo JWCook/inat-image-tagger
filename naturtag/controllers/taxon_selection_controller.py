@@ -191,7 +191,12 @@ class TaxonSelectionController(Controller):
             return {}
 
         self.observed_taxa_ids.clear()
-        self.observed_taxa_ids.update(get_observed_taxa(username))
+        self.observed_taxa_ids.update(
+            get_observed_taxa(
+                username,
+                include_casual=get_app().inaturalist.get('casual_observations')
+            )
+        )
 
     def reload_observed_taxa(self):
         """Get all user-observed taxa and reload all items into tab"""

@@ -20,7 +20,7 @@
                 TwoLineListItem:
                     font_style: 'H6'
                     text: 'Locale'
-                    secondary_text: 'Locale preference for taxon common names'
+                    secondary_text: 'Locale preference for species common names'
                 TextInputListItem:
                     id: locale_input
                     icon_right: 'earth'
@@ -28,12 +28,20 @@
                     id: preferred_place_id_label
                     font_style: 'H6'
                     text: 'Preferred place ID'
-                    secondary_text: 'Place preference for regional taxon common names'
+                    secondary_text: 'Place preference for regional species common names'
                     tertiary_text: 'See [b][color=#00BED4]https://www.inaturalist.org/places[/color][/b] to search for your region'
                 TextInputListItem:
                     id: preferred_place_id_input
                     icon_right: 'city'
                     input_filter: 'int'
+                TwoLineAvatarIconListItem:
+                    font_style: 'H6'
+                    text: 'Casual observations'
+                    secondary_text: 'Include casual observations in list of your observed species'
+                    IconLeft:
+                        icon: 'cat'
+                    SwitchListItemRight:
+                        id: casual_observations_chk
 
                 OneLineListItem:
                 OneLineListItem:
@@ -58,7 +66,7 @@
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Darwin Core Metadata'
-                    secondary_text: 'Convert taxon/observation metadata into XMP Darwin Core metadata'
+                    secondary_text: 'Convert species/observation metadata into XMP Darwin Core metadata'
                     IconLeft:
                         icon: 'xml'
                     SwitchListItemRight:
