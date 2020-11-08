@@ -67,30 +67,32 @@ class ControllerProxy:
         self.image_selection_controller = ImageSelectionController(screens[HOME_SCREEN].ids)
         self.metadata_view_controller = MetadataViewController(screens['metadata'].ids)
         self.settings_controller = SettingsController(screens['settings'].ids)
+        self.taxon_search_controller = TaxonSearchController(screens['taxon'].ids)
         self.taxon_selection_controller = TaxonSelectionController(screens['taxon'].ids)
         self.taxon_view_controller = TaxonViewController(screens['taxon'].ids)
-        self.taxon_search_controller = TaxonSearchController(screens['taxon'].ids)
         # observation_search_controller = ObservationSearchController(screens['observation'].ids)
 
         # Proxy methods
-        self.is_starred = self.taxon_selection_controller.is_starred
+        self.add_control_widget = self.settings_controller.add_control_widget
         self.add_star = self.taxon_selection_controller.add_star
-        self.select_metadata = self.metadata_view_controller.select_metadata
+        self.is_observed = self.settings_controller.is_observed
+        self.is_starred = self.taxon_selection_controller.is_starred
+        self.refresh_history = self.taxon_selection_controller.post_init
+        self.refresh_observed_taxa = self.taxon_selection_controller.refresh_observed_taxa_tab
         self.remove_star = self.taxon_selection_controller.remove_star
+        self.save_settings = self.settings_controller.save_settings
+        self.select_metadata = self.metadata_view_controller.select_metadata
         self.select_taxon = self.taxon_view_controller.select_taxon
         self.select_taxon_from_photo = self.image_selection_controller.select_taxon_from_photo
         self.update_history = self.taxon_selection_controller.update_history
-        self.refresh_history = self.taxon_selection_controller.post_init
-        self.add_control_widget = self.settings_controller.add_control_widget
-        self.is_observed = self.settings_controller.is_observed
-        self.save_settings = self.settings_controller.save_settings
 
         # Proxy properties
-        self.stored_taxa = self.settings_controller.stored_taxa
         self.locale = self.settings_controller.locale
-        self.username = self.settings_controller.username
-        self.metadata = self.settings_controller.metadata
+        self.inaturalist_config = self.settings_controller.inaturalist
+        self.metadata_config = self.settings_controller.metadata
         self.preferred_place_id = self.settings_controller.preferred_place_id
+        self.stored_taxa = self.settings_controller.stored_taxa
+        self.username = self.settings_controller.username
 
         self.image_selection_controller.post_init()
         self.taxon_selection_controller.post_init()

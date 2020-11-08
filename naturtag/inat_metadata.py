@@ -179,11 +179,10 @@ def get_observed_taxa(username: str, include_casual: bool = False) -> Dict[int, 
     """Get counts of taxa observed by the user, ordered by number of observations descending"""
     if not username:
         return {}
-    # Note: verifiable=False will return *only* casual observations
     logger.info(f'Searching for user-observed taxa (casual: {include_casual})')
     response = get_observation_species_counts(
         user_login=username,
-        verifiable=True if include_casual else None
+        verifiable=None if include_casual else True  # False will return *only* casual observations
     )
     logger.info(f'{len(response["results"])} user-observed taxa found')
     observed_taxa = {r['taxon']['id']: r['count'] for r in response['results']}

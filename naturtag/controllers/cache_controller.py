@@ -22,6 +22,7 @@ class CacheController(Controller):
         self.screen.clear_request_cache_button.bind(on_release=self.clear_http_cache)
         self.screen.clear_thumbnail_cache_button.bind(on_release=self.clear_thumbnail_cache)
         self.screen.clear_history_button.bind(on_release=self.clear_history)
+        self.screen.refresh_observed_taxa_button.bind(on_release=self.refresh_observed_taxa)
 
         Clock.schedule_once(self.update_cache_sizes, 5)
 
@@ -48,6 +49,11 @@ class CacheController(Controller):
         delete_thumbnails()
         self.update_cache_sizes()
         alert('Cache has been cleared')
+
+    @staticmethod
+    def refresh_observed_taxa(*args):
+        get_app().refresh_observed_taxa()
+        alert('Refreshing observed species...')
 
     def update_cache_sizes(self, *args):
         """Populate 'Cache Size' sections with calculated totals"""

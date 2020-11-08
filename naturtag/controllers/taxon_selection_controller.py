@@ -182,6 +182,7 @@ class TaxonSelectionController(Controller):
         self.starred_taxa_list.remove_widget(item)
         self.starred_taxa_list.add_widget(item, len(self.starred_taxa_list.children))
 
+    # TODO: Only refresh if 'expired'
     def refresh_observed_taxa(self):
         """Get all user-observed taxa, if a username has been provided"""
         username = get_app().username
@@ -194,13 +195,17 @@ class TaxonSelectionController(Controller):
         self.observed_taxa_ids.update(
             get_observed_taxa(
                 username,
-                include_casual=get_app().inaturalist.get('casual_observations')
+                include_casual=get_app().inaturalist_config.get('casual_observations')
             )
         )
+        self.set_taxon_sort_key(self.observed_taxa_list, self.observed_taxa_ids)
 
-    def reload_observed_taxa(self):
+    def refresh_observed_taxa_tab(self):
         """Get all user-observed taxa and reload all items into tab"""
         self.refresh_observed_taxa()
+        Clock.schedule_once(lambda *x: asyncio.run(self.load_observed_taxa()))
+
+    async def load_observed_taxa(self):
         top_observed_ids = list(self.observed_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
 
         loader = TaxonBatchLoader()
@@ -209,8 +214,8 @@ class TaxonSelectionController(Controller):
         logger.info(f'Taxon: loading {len(top_observed_ids)} user-observed taxa')
         loader.add_batch(top_observed_ids, parent=self.observed_taxa_list)
 
+        loader.bind(on_complete=lambda *args: self.observed_taxa_list.sort())
         loader.start_thread()
-        self.observed_taxa_list.sort()
 
     @staticmethod
     def set_taxon_sort_key(taxon_list, taxon_mapping):
