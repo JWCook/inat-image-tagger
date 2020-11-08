@@ -16,8 +16,8 @@ from naturtag.settings import (
     read_stored_taxa,
     write_stored_taxa,
     reset_defaults,
-    is_expired,
 )
+from naturtag.validation import is_expired
 
 logger = getLogger(__name__)
 

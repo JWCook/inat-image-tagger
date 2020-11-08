@@ -202,9 +202,9 @@ def preload_thumnails(taxon, min_rank='family', depth=0):
     thumnail_exists = taxon.photo_url and get_thumbnail_if_exists(taxon.photo_url)
 
     # Only preload images that can be redistributed under Creative Commons
-    if taxon.has_cc_photo and not thumnail_exists:
+    if taxon.default_photo.has_cc_license and not thumnail_exists:
         generate_thumbnail_from_url(taxon.photo_url, 'large')
-        generate_thumbnail_from_url(taxon.thumbnail_url, 'small')
+        generate_thumbnail_from_url(taxon.default_photo.thumbnail_url, 'small')
         sleep(IMAGE_DOWNLOAD_DELAY)
 
     if taxon.rank not in [min_rank, 'species', 'subspecies']:

@@ -1,7 +1,7 @@
 """Type conversion, validation, and formatting utilities"""
 from datetime import datetime
 from dateutil.parser import parse as parse_date
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 from naturtag.constants import Coordinates
 
@@ -32,6 +32,15 @@ def try_int(value):
         return int(value)
     except (TypeError, ValueError):
         return value
+
+
+def format_const(value: str) -> str:
+    return str(value).upper().replace('_', '-')
+
+
+def format_dimensions(dimensions: Dict[str, int]) -> Tuple[int, int]:
+    """Slightly simplify 'dimensions' response attribute into ``(width, height)`` tuple"""
+    return dimensions.get("width", 0), dimensions.get("height", 0)
 
 
 def format_file_size(value):

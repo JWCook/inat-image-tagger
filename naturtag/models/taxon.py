@@ -2,10 +2,15 @@ import attr
 from typing import List, Dict, Optional
 
 from pyinaturalist.node_api import get_taxa_by_id
+from naturtag.models import Photo
 from naturtag.inat_metadata import get_rank_idx
 from naturtag.constants import TAXON_BASE_URL, ICONISH_TAXA, ATLAS_APP_ICONS, CC_LICENSES
 
 kwarg = attr.ib(default=None)
+
+
+def convert_taxon_photos(taxon_photos):
+    return [Photo.from_dict(t['photo']) for t in taxon_photos]
 
 
 @attr.s
@@ -47,14 +52,19 @@ class Taxon:
     children: List[Dict] = attr.ib(factory=list)
     conservation_statuses: List[str] = attr.ib(factory=list)
     current_synonymous_taxon_ids: List[int] = attr.ib(factory=list)
-    default_photo: Dict = attr.ib(factory=dict)
+    default_photo: Photo = attr.ib(factory=Photo, converter=Photo.from_dict)
     flag_counts: Dict = attr.ib(factory=dict)
     listed_taxa: List = attr.ib(factory=list)
-    taxon_photos: List = attr.ib(factory=list)
+    photos: List[Photo] = attr.ib(init=False, default=None)
+    taxon_photos: List[Photo] = attr.ib(factory=list, converter=convert_taxon_photos)
 
     # Internal attrs managed by @properties
     _parent_taxa: List = attr.ib(default=None)
     _child_taxa: List = attr.ib(default=None)
+
+    # Set aliases
+    def __attrs_post_init__(self):
+        self.photos = self.taxon_photos
 
     @classmethod
     def from_id(cls, id: int):
@@ -88,22 +98,12 @@ class Taxon:
         return get_icon_path(self.iconic_taxon_id)
 
     @property
-    def link(self) -> str:
+    def uri(self) -> str:
         return f'{TAXON_BASE_URL}/{self.id}'
 
     @property
     def photo_url(self) -> str:
-        return self.default_photo.get('medium_url')
-
-    @property
-    def has_cc_photo(self) -> bool:
-        """ Determine if there is a default photo with a Creative Commons license """
-        license = self.default_photo.get('license_code', '').upper()
-        return license in CC_LICENSES and self.photo_url
-
-    @property
-    def thumbnail_url(self) -> str:
-        return self.default_photo.get('square_url')
+        return self.default_photo.medium_url
 
     @property
     def parent_taxa(self) -> List:

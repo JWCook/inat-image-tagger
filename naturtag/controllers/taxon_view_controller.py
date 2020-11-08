@@ -75,8 +75,8 @@ class TaxonViewController(Controller):
             self.taxon_photo.source = self.selected_taxon.photo_url
 
         # Configure link to iNaturalist page
-        self.taxon_link.bind(on_release=lambda *x: webbrowser.open(self.selected_taxon.link))
-        self.taxon_link.tooltip_text = self.selected_taxon.link
+        self.taxon_link.bind(on_release=lambda *x: webbrowser.open(self.selected_taxon.uri))
+        self.taxon_link.tooltip_text = self.selected_taxon.uri
         self.taxon_link.disabled = False
 
         # Configure 'View parent' button

@@ -1,12 +1,12 @@
 import attr
 from dateutil.parser import parse as parse_date
-from datetime import date, datetime
+from datetime import datetime
 from typing import List, Dict
 from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
-from naturtag.constants import OBSERVATION_BASE_URL, Coordinates
-from naturtag.models import Taxon
+from naturtag.constants import Coordinates
+from naturtag.models import Photo, Taxon
 from naturtag.validation import convert_coord_pair
 
 coordinate_pair = attr.ib(converter=convert_coord_pair, default=None)
@@ -67,10 +67,9 @@ class Observation:
     faves: List = attr.ib(factory=list)
     flags: List = attr.ib(factory=list)
     identifications: List = attr.ib(factory=list)  # TODO: make separate model + condensed format
-    observation_photos: List = attr.ib(factory=list)  # TODO: What is the difference between this and 'photos'?
     ofvs: List = attr.ib(factory=list)
     outlinks: List = attr.ib(factory=list)
-    photos: List = attr.ib(factory=list)
+    photos: List[Photo] = attr.ib(factory=list, converter=Photo.from_dict_list)
     place_ids: List = attr.ib(factory=list)
     preferences: Dict = attr.ib(factory=dict)
     project_ids: List = attr.ib(factory=list)
@@ -81,7 +80,7 @@ class Observation:
     reviewed_by: List = attr.ib(factory=list)
     sounds: List = attr.ib(factory=list)
     tags: List = attr.ib(factory=list)
-    taxon: Taxon = attr.ib(converter=Taxon.from_dict, default=None)
+    taxon: Taxon = attr.ib(factory=Taxon, converter=Taxon.from_dict)
     user: Dict = attr.ib(factory=dict)  # TODO: make separate model + condensed format
     votes: List = attr.ib(factory=list)
 
@@ -90,6 +89,8 @@ class Observation:
     # created_time_zone: str = kwarg
     # geojson: Dict = attr.ib(factory=dict)
     # non_owner_ids: List = attr.ib(factory=list)
+    # TODO: Is there any difference between 'observation_photos' and 'photos'?
+    # observation_photos: List[Photo] = attr.ib(factory=list, converter=Photo.from_dict_list)
     # observed_on: date = timestamp
     # observed_on_details: Dict = attr.ib(factory=dict)
     # observed_on_string: datetime = timestamp
@@ -109,3 +110,9 @@ class Observation:
         attr_names = attr.fields_dict(cls).keys()
         valid_json = {k: v for k, v in json.items() if k in attr_names and v is not None}
         return cls(partial=partial, **valid_json)
+
+    @property
+    def thumbnail_url(self) -> str:
+        if not self.photos:
+            return None
+        return self.photos[0].get('url')

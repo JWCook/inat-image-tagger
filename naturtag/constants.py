@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 from appdirs import user_data_dir
 from naturtag import __version__
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.request_params import RANKS
+from pyinaturalist.request_params import CC_LICENSES, RANKS
 
 # Resource directories
 PKG_DIR = dirname(dirname(__file__))
@@ -32,7 +32,6 @@ THUMBNAIL_SIZES = {
     'medium': THUMBNAIL_SIZE_DEFAULT,
     'large': THUMBNAIL_SIZE_LG,
 }
-CC_LICENSES = ['CC0', 'CC-BY', 'CC_BY_NC']
 
 # Atlas settings
 ATLAS_MAX_SIZE = 4096
@@ -57,9 +56,11 @@ STORED_TAXA_PATH = join(DATA_DIR, 'stored_taxa.json')
 MAX_DISPLAY_HISTORY = 50  # Max number of history items to display at a time
 
 # URLs / API settings
-TAXON_BASE_URL = 'https://www.inaturalist.org/taxa'
 OBSERVATION_BASE_URL = 'https://www.inaturalist.org/observations'
+PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
+PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 PLACES_BASE_URL = 'https://www.inaturalist.org/places'
+TAXON_BASE_URL = 'https://www.inaturalist.org/taxa'
 USER_AGENT = f'naturtag/{__version__}; {DEFAULT_USER_AGENT}'.lower()
 
 # Theme/window settings
