@@ -86,14 +86,6 @@ class ControllerProxy:
         self.select_taxon_from_photo = self.image_selection_controller.select_taxon_from_photo
         self.update_history = self.taxon_selection_controller.update_history
 
-        # Proxy properties
-        self.locale = self.settings_controller.locale
-        self.inaturalist_config = self.settings_controller.inaturalist
-        self.metadata_config = self.settings_controller.metadata
-        self.preferred_place_id = self.settings_controller.preferred_place_id
-        self.stored_taxa = self.settings_controller.stored_taxa
-        self.username = self.settings_controller.username
-
         self.image_selection_controller.post_init()
         self.taxon_selection_controller.post_init()
 

@@ -28,7 +28,7 @@ class CacheController(Controller):
 
     def clear_history(self, *args):
         logger.info('Settings: Clearing history')
-        history, _, frequent, _ = get_app().stored_taxa
+        history, _, frequent, _ = get_app().settings_controller.stored_taxa
         history.clear()
         frequent.clear()
 
@@ -64,5 +64,5 @@ class CacheController(Controller):
         out.secondary_text = (
             f'Thumbnail cache size: {num_thumbs} files totaling {thumbnail_total_size}'
         )
-        history, _, frequent, _ = get_app().stored_taxa
+        history, _, frequent, _ = get_app().settings_controller.stored_taxa
         out.tertiary_text = f'History: {len(history)} items ({len(frequent)} unique)'
