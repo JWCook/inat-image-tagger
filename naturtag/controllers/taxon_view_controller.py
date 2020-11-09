@@ -71,8 +71,8 @@ class TaxonViewController(Controller):
     async def load_photo_section(self):
         """ Load taxon photo + links """
         logger.info('Taxon: Loading photo section')
-        if self.selected_taxon.photo_url:
-            self.taxon_photo.source = self.selected_taxon.photo_url
+        if self.selected_taxon.default_photo.medium_url:
+            self.taxon_photo.source = self.selected_taxon.default_photo.medium_url
 
         # Configure link to iNaturalist page
         self.taxon_link.bind(on_release=lambda *x: webbrowser.open(self.selected_taxon.uri))

@@ -199,11 +199,13 @@ def preload_iconic_taxa_thumbnails():
 
 def preload_thumnails(taxon, min_rank='family', depth=0):
     logger.info(f'Processing: {taxon.rank} {taxon.name} at depth {depth}')
-    thumnail_exists = taxon.photo_url and get_thumbnail_if_exists(taxon.photo_url)
+    thumnail_exists = taxon.default_photo.medium_url and get_thumbnail_if_exists(
+        taxon.default_photo.medium_url
+    )
 
     # Only preload images that can be redistributed under Creative Commons
     if taxon.default_photo.has_cc_license and not thumnail_exists:
-        generate_thumbnail_from_url(taxon.photo_url, 'large')
+        generate_thumbnail_from_url(taxon.default_photo.medium_url, 'large')
         generate_thumbnail_from_url(taxon.default_photo.thumbnail_url, 'small')
         sleep(IMAGE_DOWNLOAD_DELAY)
 

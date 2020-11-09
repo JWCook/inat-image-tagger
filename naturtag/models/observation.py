@@ -1,30 +1,24 @@
 import attr
-from dateutil.parser import parse as parse_date
 from datetime import datetime
 from typing import List, Dict
 from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
 from naturtag.constants import Coordinates
-from naturtag.models import Identification, Photo, Taxon, User
+from naturtag.models import BaseModel, Identification, Photo, Taxon, User, kwarg, timestamp
 from naturtag.validation import convert_coord_pair
 
 coordinate_pair = attr.ib(converter=convert_coord_pair, default=None)
-kwarg = attr.ib(default=None)
-timestamp = attr.ib(converter=parse_date, default=None)
 
 
 @attr.s
-class Observation:
+class Observation(BaseModel):
     """A data class containing information about an observation, matching the schema of
     ``GET /observations`` from the iNaturalist API:
     https://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     """
-
-    id: int = kwarg
-    partial: bool = kwarg
 
     cached_votes_total: int = kwarg
     captive: bool = kwarg
@@ -67,11 +61,11 @@ class Observation:
     faves: List = attr.ib(factory=list)
     flags: List = attr.ib(factory=list)
     identifications: List[Identification] = attr.ib(
-        factory=Identification, converter=Identification.from_dict_list
+        converter=Identification.from_dict_list, factory=list
     )
     ofvs: List = attr.ib(factory=list)
     outlinks: List = attr.ib(factory=list)
-    photos: List[Photo] = attr.ib(factory=list, converter=Photo.from_dict_list)
+    photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
     place_ids: List = attr.ib(factory=list)
     preferences: Dict = attr.ib(factory=dict)
     project_ids: List = attr.ib(factory=list)
@@ -82,8 +76,8 @@ class Observation:
     reviewed_by: List = attr.ib(factory=list)
     sounds: List = attr.ib(factory=list)
     tags: List = attr.ib(factory=list)
-    taxon: Taxon = attr.ib(factory=Taxon, converter=Taxon.from_dict)
-    user: User = attr.ib(factory=User, converter=User.from_dict)
+    taxon: Taxon = attr.ib(converter=Taxon.from_dict, default=None)
+    user: User = attr.ib(converter=User.from_dict, default=None)
     votes: List = attr.ib(factory=list)
 
     # Additional response fields that are used by the web UI but are redundant here
@@ -91,8 +85,7 @@ class Observation:
     # created_time_zone: str = kwarg
     # geojson: Dict = attr.ib(factory=dict)
     # non_owner_ids: List = attr.ib(factory=list)
-    # TODO: Is there any difference between 'observation_photos' and 'photos'?
-    # observation_photos: List[Photo] = attr.ib(factory=list, converter=Photo.from_dict_list)
+    # observation_photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
     # observed_on: date = timestamp
     # observed_on_details: Dict = attr.ib(factory=dict)
     # observed_on_string: datetime = timestamp
@@ -104,14 +97,6 @@ class Observation:
         """ Lookup and create a new Observation object from an ID """
         json = get_observation(id)
         return cls.from_dict(json)
-
-    @classmethod
-    def from_dict(cls, json: Dict, partial: bool = False):
-        """ Create a new Observation object from an API response """
-        # Strip out Nones so we use our default factories instead (e.g. for empty lists)
-        attr_names = attr.fields_dict(cls).keys()
-        valid_json = {k: v for k, v in json.items() if k in attr_names and v is not None}
-        return cls(partial=partial, **valid_json)
 
     @property
     def thumbnail_url(self) -> str:

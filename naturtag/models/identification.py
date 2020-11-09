@@ -1,23 +1,17 @@
-from typing import Dict, List
-
-from dateutil.parser import parse as parse_date
 from datetime import datetime
+from typing import List
 from uuid import UUID
 
 import attr
 
-from naturtag.models import Taxon, User
-
-kwarg = attr.ib(default=None)
-timestamp = attr.ib(converter=parse_date, default=None)
+from naturtag.models import BaseModel, Taxon, User, aliased_kwarg, kwarg, timestamp
 
 
 @attr.s
-class Identification:
-    id: int = kwarg
-
-    body: str = kwarg
+class Identification(BaseModel):
+    body: str = aliased_kwarg  # Aliased to 'comment'
     category: str = kwarg  # Enum
+    comment: str = kwarg
     created_at: datetime = timestamp
     current: bool = kwarg
     current_taxon: bool = kwarg
@@ -26,7 +20,7 @@ class Identification:
     own_observation: bool = kwarg
     previous_observation_taxon_id: int = kwarg
     spam: bool = kwarg
-    taxon_change: bool = kwarg  # TODO: unsure of type
+    taxon_change: bool = kwarg  # TODO: confirm type
     taxon_id: int = kwarg
     uuid: UUID = attr.ib(converter=UUID, default=None)
     vision: bool = kwarg
@@ -34,19 +28,7 @@ class Identification:
     flags: List = attr.ib(factory=list)
     moderator_actions: List = attr.ib(factory=list)
     # observation: {}  # TODO: If this is needed, need to lazy load it
-    taxon: Taxon = attr.ib(factory=Taxon, converter=Taxon.from_dict)
-    user: User = attr.ib(factory=User, converter=User.from_dict)
+    taxon: Taxon = attr.ib(converter=Taxon.from_dict, default=None)
+    user: User = attr.ib(converter=User.from_dict, default=None)
 
     # created_at_details: {}
-
-    @classmethod
-    def from_dict(cls, json: Dict):
-        """Create a new Photo object from an API response"""
-        # Strip out Nones so we use our default factories instead (e.g. for empty lists)
-        attr_names = attr.fields_dict(cls).keys()
-        valid_json = {k: v for k, v in json.items() if k in attr_names and v is not None}
-        return cls(**valid_json)
-
-    @classmethod
-    def from_dict_list(cls, json: List[Dict]) -> List:
-        return [cls.from_dict(p) for p in json]

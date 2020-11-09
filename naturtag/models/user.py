@@ -3,16 +3,13 @@ from dateutil.parser import parse as parse_date
 from datetime import datetime
 from typing import List, Dict
 
-aliased_kwarg = attr.ib(default=None, repr=False)
-kwarg = attr.ib(default=None)
+from naturtag.models import BaseModel, aliased_kwarg, kwarg, timestamp
 
 
 @attr.s
-class User:
-    id: int = kwarg
-
+class User(BaseModel):
     activity_count: int = kwarg
-    created_at: datetime = attr.ib(converter=parse_date, default=None)
+    created_at: datetime = timestamp
     display_name: str = kwarg
     icon: str = kwarg
     icon_url: str = kwarg
@@ -38,11 +35,3 @@ class User:
     def __attrs_post_init__(self):
         self.username = self.login
         self.display_name = self.name
-
-    @classmethod
-    def from_dict(cls, json: Dict):
-        """Create a new Photo object from an API response"""
-        # Strip out Nones so we use our default factories instead (e.g. for empty lists)
-        attr_names = attr.fields_dict(cls).keys()
-        valid_json = {k: v for k, v in json.items() if k in attr_names and v is not None}
-        return cls(**valid_json)
