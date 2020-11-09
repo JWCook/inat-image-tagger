@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
 from naturtag.constants import Coordinates
-from naturtag.models import Photo, Taxon, User
+from naturtag.models import Identification, Photo, Taxon, User
 from naturtag.validation import convert_coord_pair
 
 coordinate_pair = attr.ib(converter=convert_coord_pair, default=None)
@@ -66,7 +66,9 @@ class Observation:
     comments: List = attr.ib(factory=list)  # TODO: make separate model + condensed format
     faves: List = attr.ib(factory=list)
     flags: List = attr.ib(factory=list)
-    identifications: List = attr.ib(factory=list)  # TODO: make separate model + condensed format
+    identifications: List[Identification] = attr.ib(
+        factory=Identification, converter=Identification.from_dict_list
+    )
     ofvs: List = attr.ib(factory=list)
     outlinks: List = attr.ib(factory=list)
     photos: List[Photo] = attr.ib(factory=list, converter=Photo.from_dict_list)
