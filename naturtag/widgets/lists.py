@@ -77,7 +77,9 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
         )
 
         # Add thumbnail
-        self.add_widget(ThumbnailListItem(source=taxon.default_photo.thumbnail_url or taxon.icon_path))
+        self.add_widget(
+            ThumbnailListItem(source=taxon.default_photo.thumbnail_url or taxon.icon_path)
+        )
         # Add user icon if taxon has been observed by the user
         if highlight_observed and get_app().is_observed(taxon.id):
             self.add_widget(IconRightWidget(icon='account-search'))

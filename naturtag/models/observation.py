@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
 from naturtag.constants import Coordinates
-from naturtag.models import Photo, Taxon
+from naturtag.models import Photo, Taxon, User
 from naturtag.validation import convert_coord_pair
 
 coordinate_pair = attr.ib(converter=convert_coord_pair, default=None)
@@ -81,7 +81,7 @@ class Observation:
     sounds: List = attr.ib(factory=list)
     tags: List = attr.ib(factory=list)
     taxon: Taxon = attr.ib(factory=Taxon, converter=Taxon.from_dict)
-    user: Dict = attr.ib(factory=dict)  # TODO: make separate model + condensed format
+    user: User = attr.ib(factory=User, converter=User.from_dict)
     votes: List = attr.ib(factory=list)
 
     # Additional response fields that are used by the web UI but are redundant here
