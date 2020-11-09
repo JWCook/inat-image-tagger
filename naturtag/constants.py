@@ -19,6 +19,7 @@ TRIGGER_DELAY = 0.1
 AUTOCOMPLETE_DELAY = 0.5
 AUTOCOMPLETE_MIN_CHARS = 3
 IMAGE_FILETYPES = ['*.jpg', '*.jpeg', '*.png', '*.gif']
+PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 
 # Thumnbnail & cache settings
 EXIF_ORIENTATION_ID = '0x0112'

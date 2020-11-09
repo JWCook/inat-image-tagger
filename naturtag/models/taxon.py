@@ -62,7 +62,7 @@ class Taxon:
     _parent_taxa: List = attr.ib(default=None)
     _child_taxa: List = attr.ib(default=None)
 
-    # Set aliases
+    # Add aliases
     def __attrs_post_init__(self):
         self.photos = self.taxon_photos
 
