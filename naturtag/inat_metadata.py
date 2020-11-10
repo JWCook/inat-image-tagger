@@ -34,7 +34,7 @@ makedirs(dirname(CACHE_PATH), exist_ok=True)
 requests_cache.install_cache(
     backend=CACHE_BACKEND,
     cache_name=CACHE_PATH,
-    expire_after=timedelta(hours=API_CACHE_EXPIRY_HOURS),
+    # expire_after=timedelta(hours=API_CACHE_EXPIRY_HOURS),
 )
 logger = getLogger().getChild(__name__)
 
@@ -213,7 +213,8 @@ def get_inaturalist_ids(metadata):
     """ Look for taxon and/or observation IDs from metadata if available """
     # Get first non-None value from specified keys, if any; otherwise return None
     def _first_match(d, keys):
-        return next(filter(None, map(d.get, keys)), None)
+        id = next(filter(None, map(d.get, keys)), None)
+        return int(id) if id else None
 
     # Check all possible keys for valid taxon and observation IDs
     taxon_id = _first_match(metadata, TAXON_KEYS)

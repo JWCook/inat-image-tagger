@@ -1,6 +1,6 @@
 import attr
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List, Optional
 from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
@@ -99,7 +99,7 @@ class Observation(BaseModel):
         return cls.from_dict(json)
 
     @property
-    def thumbnail_url(self) -> str:
+    def thumbnail_url(self) -> Optional[str]:
         if not self.photos:
             return None
-        return self.photos[0].get('url')
+        return self.photos[0].thumbnail_url

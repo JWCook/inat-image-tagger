@@ -10,6 +10,7 @@ logger = getLogger().getChild(__name__)
 
 
 # TODO: Extract GPS info
+# TODO: __str__
 class MetaMetadata(ImageMetadata):
     """ Class for parsing & organizing info derived from basic image metadata """
 
