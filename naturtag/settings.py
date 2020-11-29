@@ -1,15 +1,15 @@
 """ Basic utilities for reading and writing settings from config files """
+import json
 from collections import Counter, OrderedDict
 from logging import getLogger
 from os import makedirs
 from os.path import isfile
 from shutil import copyfile
-from typing import Dict, Any
+from typing import Any, Dict
 
-import json
 import yaml
 
-from naturtag.constants import DATA_DIR, CONFIG_PATH, DEFAULT_CONFIG_PATH, STORED_TAXA_PATH
+from naturtag.constants import CONFIG_PATH, DATA_DIR, DEFAULT_CONFIG_PATH, STORED_TAXA_PATH
 from naturtag.validation import convert_int_dict
 
 logger = getLogger().getChild(__name__)

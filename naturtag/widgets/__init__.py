@@ -2,6 +2,8 @@
 Custom widgets with more complex behavior that can't be defined in just kvlang.
 See widgets.kv for non-behavioral widget settings
 """
+# flake8: noqa: F401
+
 
 # Not sure where else to put thus
 def truncate(text: str) -> str:
@@ -12,25 +14,25 @@ def truncate(text: str) -> str:
 
 
 from naturtag.constants import MAX_LABEL_CHARS
-from naturtag.widgets.inputs import DropdownTextField, TextFieldWrapper
 from naturtag.widgets.autocomplete import AutocompleteSearch, DropdownContainer, DropdownItem
 from naturtag.widgets.buttons import StarButton, TooltipFloatingButton, TooltipIconButton
 from naturtag.widgets.images import CachedAsyncImage, IconicTaxaIcon, ImageMetaTile
+from naturtag.widgets.inputs import DropdownTextField, TextFieldWrapper
 from naturtag.widgets.labels import HideableTooltip, TooltipLabel
-from naturtag.widgets.tabs import Tab
 from naturtag.widgets.lists import (
     SortableList,
     SwitchListItemLeft,
     SwitchListItemRight,
-    TextInputListItem,
     TaxonListItem,
+    TextInputListItem,
     ThumbnailListItem,
 )
 from naturtag.widgets.menus import (
-    ObjectContextMenu,
     AutoHideMenuItem,
-    PhotoContextMenuItem,
     ListContextMenuItem,
+    ObjectContextMenu,
+    PhotoContextMenuItem,
 )
 from naturtag.widgets.progress_bar import LoaderProgressBar
+from naturtag.widgets.tabs import Tab
 from naturtag.widgets.taxon_autocomplete import TaxonAutocompleteSearch

@@ -1,6 +1,6 @@
 """ Combined entry point for both CLI and GUI """
-from naturtag.models.meta_metadata import MetaMetadata
 from naturtag.inat_metadata import get_keywords, get_observation_dwc_terms
+from naturtag.models.meta_metadata import MetaMetadata
 
 
 def tag_images(

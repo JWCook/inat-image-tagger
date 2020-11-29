@@ -1,4 +1,5 @@
 import pytest
+
 from naturtag.atlas import get_atlas_dimensions
 
 

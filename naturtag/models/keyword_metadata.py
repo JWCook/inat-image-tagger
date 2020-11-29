@@ -2,7 +2,7 @@ from itertools import chain
 from logging import getLogger
 from typing import Any, Dict, List
 
-from naturtag.inat_metadata import sort_taxonomy_keywords, quote
+from naturtag.inat_metadata import quote, sort_taxonomy_keywords
 
 # All tags that support regular and hierarchical keyword lists
 KEYWORD_TAGS = [

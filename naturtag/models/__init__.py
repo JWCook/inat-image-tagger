@@ -1,5 +1,7 @@
 """ Data classes with utilities for managing specific resources """
+# flake8: noqa: F401
 # TODO: simplified __str__ implementations
+
 
 # Imported in order of dependencies
 from naturtag.models.base import BaseModel, aliased_kwarg, kwarg, timestamp

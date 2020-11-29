@@ -2,11 +2,11 @@ from typing import Union
 
 from kivy.core.clipboard import Clipboard
 from kivymd.uix.list import (
-    MDList,
     IconRightWidget,
     ILeftBody,
     ILeftBodyTouch,
     IRightBodyTouch,
+    MDList,
     OneLineListItem,
     ThreeLineAvatarIconListItem,
 )
@@ -15,7 +15,7 @@ from kivymd.uix.textfield import MDTextFieldRound
 
 from naturtag.app import alert, get_app
 from naturtag.models import Taxon
-from naturtag.widgets import CachedAsyncImage, Tab
+from naturtag.widgets import CachedAsyncImage
 
 
 class SortableList(MDList):

@@ -1,11 +1,11 @@
 """ Screen classes used by the app """
 from logging import getLogger
 from os.path import join
-from typing import Dict, Any
+from typing import Any, Dict
 
 from kivy.lang import Builder
-from kivymd.uix.screen import MDScreen
 from kivy.uix.boxlayout import BoxLayout
+from kivymd.uix.screen import MDScreen
 
 from naturtag.constants import KV_SRC_DIR
 

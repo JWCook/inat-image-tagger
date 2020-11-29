@@ -1,13 +1,13 @@
 import asyncio
-from logging import getLogger
 import webbrowser
+from logging import getLogger
 from typing import List
 
-from kivymd.uix.list import OneLineListItem, ThreeLineAvatarIconListItem, ImageLeftWidget
-from naturtag.controllers import Controller, TaxonBatchLoader
+from kivymd.uix.list import ImageLeftWidget, OneLineListItem, ThreeLineAvatarIconListItem
 
-from naturtag.models import Taxon, get_icon_path
 from naturtag.app import get_app
+from naturtag.controllers import Controller, TaxonBatchLoader
+from naturtag.models import Taxon, get_icon_path
 from naturtag.widgets import StarButton
 
 logger = getLogger().getChild(__name__)

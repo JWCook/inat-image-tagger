@@ -3,11 +3,10 @@ from datetime import timedelta
 from logging import getLogger
 from os import makedirs
 from os.path import dirname, getsize
-from typing import Tuple, Optional, Dict, List
+from typing import Dict, List, Optional, Tuple
 
 import requests_cache
 import xmltodict
-
 from pyinaturalist.node_api import (
     get_observation,
     get_observation_species_counts,
@@ -15,17 +14,18 @@ from pyinaturalist.node_api import (
     get_taxa_by_id,
 )
 from pyinaturalist.rest_api import get_observations
+
 from naturtag.constants import (
-    CACHE_BACKEND,
     API_CACHE_EXPIRY_HOURS,
+    CACHE_BACKEND,
     CACHE_PATH,
     COMMON_NAME_IGNORE_TERMS,
     DWC_NAMESPACES,
     OBSERVATION_KEYS,
-    TAXON_KEYS,
     RANKS,
-    StrTuple,
+    TAXON_KEYS,
     IntTuple,
+    StrTuple,
 )
 from naturtag.validation import format_file_size
 
@@ -34,7 +34,7 @@ makedirs(dirname(CACHE_PATH), exist_ok=True)
 requests_cache.install_cache(
     backend=CACHE_BACKEND,
     cache_name=CACHE_PATH,
-    # expire_after=timedelta(hours=API_CACHE_EXPIRY_HOURS),
+    expire_after=timedelta(hours=API_CACHE_EXPIRY_HOURS),
 )
 logger = getLogger().getChild(__name__)
 

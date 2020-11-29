@@ -1,4 +1,4 @@
-from kivy.properties import NumericProperty, BooleanProperty
+from kivy.properties import BooleanProperty, NumericProperty
 from kivymd.uix.button import MDFloatingActionButton, MDRoundFlatIconButton
 from kivymd.uix.list import IconRightWidget
 from kivymd.uix.tooltip import MDTooltip

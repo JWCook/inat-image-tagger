@@ -1,4 +1,5 @@
 from pyinaturalist.node_api import get_taxa_autocomplete
+
 from naturtag.widgets import AutocompleteSearch
 
 

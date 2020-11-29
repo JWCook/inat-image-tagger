@@ -1,22 +1,22 @@
 """ Utilities for generating and retrieving image thumbnails """
 from hashlib import md5
 from io import BytesIO, IOBase
+from logging import getLogger
 from os import makedirs, scandir
 from os.path import dirname, getsize, isfile, join, normpath, splitext
 from shutil import copyfileobj, rmtree
-from logging import getLogger
 from typing import BinaryIO, Optional, Tuple, Union
 
+import requests
 from PIL import Image
 from PIL.ImageOps import exif_transpose, flip
-import requests
 
 from naturtag.constants import (
     EXIF_ORIENTATION_ID,
-    THUMBNAILS_DIR,
+    THUMBNAIL_DEFAULT_FORMAT,
     THUMBNAIL_SIZE_DEFAULT,
     THUMBNAIL_SIZES,
-    THUMBNAIL_DEFAULT_FORMAT,
+    THUMBNAILS_DIR,
 )
 from naturtag.validation import format_file_size
 

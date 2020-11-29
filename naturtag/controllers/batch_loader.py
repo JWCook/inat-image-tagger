@@ -2,14 +2,14 @@ import asyncio
 from logging import getLogger
 from threading import Thread
 from time import time
-from typing import Any, Callable, Dict, Iterable
+from typing import Any, Callable, Iterable
 
-from kivy.clock import mainthread, Clock
+from kivy.clock import Clock, mainthread
 from kivy.event import EventDispatcher
 from kivy.uix.widget import Widget
 
 from naturtag.app import get_app
-from naturtag.widgets import TaxonListItem, ImageMetaTile
+from naturtag.widgets import ImageMetaTile, TaxonListItem
 
 REPORT_RATE = 1 / 30  # Report progress to UI at 30 FPS
 logger = getLogger().getChild(__name__)

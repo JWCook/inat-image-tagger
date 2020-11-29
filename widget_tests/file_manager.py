@@ -4,11 +4,9 @@ os.environ['KIVY_GL_BACKEND'] = 'sdl2'
 
 from kivy.core.window import Window
 from kivy.lang import Builder
-
 from kivymd.app import MDApp
-from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
-
+from kivymd.uix.filemanager import MDFileManager
 
 KV = '''
 BoxLayout:

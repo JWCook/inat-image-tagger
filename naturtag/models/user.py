@@ -1,7 +1,6 @@
 import attr
-from dateutil.parser import parse as parse_date
 from datetime import datetime
-from typing import List, Dict
+from typing import List
 
 from naturtag.models import BaseModel, aliased_kwarg, kwarg, timestamp
 

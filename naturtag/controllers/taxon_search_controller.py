@@ -2,10 +2,10 @@ import asyncio
 from logging import getLogger
 
 from pyinaturalist.node_api import get_taxa
+
+from naturtag.app import get_app
 from naturtag.constants import ICONIC_TAXA, RANKS
 from naturtag.controllers import Controller, TaxonBatchLoader
-from naturtag.models import Taxon
-from naturtag.app import get_app
 from naturtag.widgets import DropdownTextField, IconicTaxaIcon
 
 logger = getLogger().getChild(__name__)

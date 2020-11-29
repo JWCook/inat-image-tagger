@@ -2,9 +2,9 @@ from logging import getLogger
 from os.path import basename
 from typing import Dict, List, Optional
 
-from naturtag.constants import StrTuple, IntTuple
+from naturtag.constants import IntTuple, StrTuple
 from naturtag.inat_metadata import get_inaturalist_ids, get_min_rank
-from naturtag.models import ImageMetadata, KeywordMetadata, KEYWORD_TAGS, HIER_KEYWORD_TAGS
+from naturtag.models import HIER_KEYWORD_TAGS, KEYWORD_TAGS, ImageMetadata, KeywordMetadata
 
 logger = getLogger().getChild(__name__)
 

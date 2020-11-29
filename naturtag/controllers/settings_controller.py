@@ -1,8 +1,8 @@
+import webbrowser
 from datetime import datetime
 from locale import getdefaultlocale
 from logging import getLogger
-from typing import Tuple, List, Dict
-import webbrowser
+from typing import Dict, List, Tuple
 
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -12,10 +12,10 @@ from naturtag.constants import OBS_CACHE_EXPIRY_HOURS, PLACES_BASE_URL
 from naturtag.controllers import Controller
 from naturtag.settings import (
     read_settings,
-    write_settings,
     read_stored_taxa,
-    write_stored_taxa,
     reset_defaults,
+    write_settings,
+    write_stored_taxa,
 )
 from naturtag.validation import is_expired
 
