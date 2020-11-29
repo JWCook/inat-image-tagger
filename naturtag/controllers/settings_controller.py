@@ -1,27 +1,29 @@
-from locale import locale_alias, getdefaultlocale
+from datetime import datetime
+from locale import getdefaultlocale
 from logging import getLogger
 from typing import Tuple, List, Dict
 import webbrowser
 
 from kivy.uix.widget import Widget
-
 from kivymd.app import MDApp
-from naturtag.app import alert
 
-from naturtag.constants import PLACES_BASE_URL
+from naturtag.app import alert
+from naturtag.constants import OBS_CACHE_EXPIRY_HOURS, PLACES_BASE_URL
+from naturtag.controllers import Controller
 from naturtag.settings import (
     read_settings,
     write_settings,
     read_stored_taxa,
     write_stored_taxa,
     reset_defaults,
+    is_expired,
 )
 
-logger = getLogger().getChild(__name__)
+logger = getLogger(__name__)
 
 
 # TODO: Track whether state changed since last write; if not, don't write on close
-class SettingsController:
+class SettingsController(Controller):
     """ Controller class to manage Settings screen, and reading from and writing to settings file """
 
     def __init__(self, settings_screen):
@@ -37,6 +39,7 @@ class SettingsController:
             on_release=lambda *x: webbrowser.open(PLACES_BASE_URL)
         )
         self.screen.dark_mode_chk.bind(active=MDApp.get_running_app().set_theme_mode)
+        self.screen.reset_default_button.bind(on_release=self.clear_settings)
 
         # Control widget ids should match the options in the settings file (with suffixes)
         self.controls = {
@@ -54,24 +57,30 @@ class SettingsController:
         self.settings_dict.setdefault(section, {})
         self.settings_dict[section].setdefault(setting_name, value)
 
+    def clear_settings(self, *args):
+        reset_defaults()
+        self.update_control_widgets()
+        alert('Settings have been reset to defaults')
+
     @property
-    def stored_taxa(self) -> Tuple[List[int], List[int], Dict[int, int]]:
+    def stored_taxa(self) -> Tuple[List[int], List[int], Dict[int, int], Dict[int, int]]:
         return (
             self._stored_taxa['history'],
             self._stored_taxa['starred'],
             self._stored_taxa['frequent'],
+            self._stored_taxa['observed'],
         )
 
     def update_control_widgets(self):
         """ Update state of settings controls in UI with values from settings file """
-        logger.info(f'Loading settings: {self.settings_dict}')
+        logger.info(f'Settings: Loading settings: {self.settings_dict}')
         for k, section in self.settings_dict.items():
             for setting_name, value in section.items():
                 self.set_control_value(setting_name, value)
 
     def save_settings(self):
         """ Save the current state of the control widgets to settings file """
-        logger.info(f'Saving settings: {self.settings_dict}')
+        logger.info(f'Settings: Saving settings: {self.settings_dict}')
         for k, section in self.settings_dict.items():
             for setting_name in section.keys():
                 value = self.get_control_value(setting_name)
@@ -106,7 +115,23 @@ class SettingsController:
         if hasattr(control_widget, 'path'):
             return control_widget, 'path', str
         else:
-            logger.warning(f'Could not detect type for {control_widget}')
+            logger.warning(f'Settings: Could not detect type for {control_widget}')
+
+    def is_observed(self, taxon_id: int):
+        """Determine if the specified taxon has been observed by the user"""
+        return taxon_id in self._stored_taxa['observed']
+
+    def is_observed_taxa_expired(self):
+        """Determine if local cache of user-observed taxa has expired"""
+        return is_expired(
+            self._stored_taxa.get("last_updated_observations"), OBS_CACHE_EXPIRY_HOURS
+        )
+
+    def update_observed_taxa(self, observed_taxa_ids: Dict[int, int]):
+        """Save updated user-observed taxa"""
+        self._stored_taxa["observed"] = observed_taxa_ids
+        self._stored_taxa["last_updated_observations"] = datetime.now().isoformat()
+        write_stored_taxa(self._stored_taxa)
 
     @property
     def locale(self):

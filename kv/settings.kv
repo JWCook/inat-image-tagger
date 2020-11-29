@@ -20,7 +20,7 @@
                 TwoLineListItem:
                     font_style: 'H6'
                     text: 'Locale'
-                    secondary_text: 'Locale preference for taxon common names'
+                    secondary_text: 'Locale preference for species common names'
                 TextInputListItem:
                     id: locale_input
                     icon_right: 'earth'
@@ -28,12 +28,20 @@
                     id: preferred_place_id_label
                     font_style: 'H6'
                     text: 'Preferred place ID'
-                    secondary_text: 'Place preference for regional taxon common names'
+                    secondary_text: 'Place preference for regional species common names'
                     tertiary_text: 'See [b][color=#00BED4]https://www.inaturalist.org/places[/color][/b] to search for your region'
                 TextInputListItem:
                     id: preferred_place_id_input
                     icon_right: 'city'
                     input_filter: 'int'
+                TwoLineAvatarIconListItem:
+                    font_style: 'H6'
+                    text: 'Casual observations'
+                    secondary_text: 'Include casual observations in list of your observed species'
+                    IconLeft:
+                        icon: 'cat'
+                    SwitchListItemRight:
+                        id: casual_observations_chk
 
                 OneLineListItem:
                 OneLineListItem:
@@ -43,45 +51,55 @@
                     font_style: 'H6'
                     text: 'Common names'
                     secondary_text: 'Include common names in taxonomy keywords'
-                    SwitchListItem:
-                        id: common_names_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'cat'
+                    SwitchListItemRight:
+                        id: common_names_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Hierarchical Keywords'
                     secondary_text: 'Generate pipe-delimited hierarchical keywords'
-                    SwitchListItem:
-                        id: hierarchical_keywords_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'file-tree'
+                    SwitchListItemRight:
+                        id: hierarchical_keywords_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Darwin Core Metadata'
-                    secondary_text: 'Convert taxon/observation metadata into XMP Darwin Core metadata'
-                    SwitchListItem:
-                        id: darwin_core_chk
-                    IconRight:
+                    secondary_text: 'Convert species/observation metadata into XMP Darwin Core metadata'
+                    IconLeft:
                         icon: 'xml'
+                    SwitchListItemRight:
+                        id: darwin_core_chk
                 TwoLineAvatarIconListItem:
                     font_style: 'H6'
                     text: 'Create XMP Files'
                     secondary_text: "Create XMP sidecar files if they don't already exist"
-                    SwitchListItem:
-                        id: create_xmp_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'file-multiple'
+                    SwitchListItemRight:
+                        id: create_xmp_chk
 
                 OneLineListItem:
                 OneLineListItem:
-                    font_style: 'H6'
                     font_style: 'H5'
                     text: 'Display settings'
                 OneLineAvatarIconListItem:
                     text: 'Dark Mode'
-                    SwitchListItem:
-                        id: dark_mode_chk
-                    IconRight:
+                    IconLeft:
                         icon: 'theme-light-dark'
+                    SwitchListItemRight:
+                        id: dark_mode_chk
+
+                OneLineListItem:
+                OneLineListItem:
+                    font_style: 'H5'
+                    text: 'Reset'
+                OneLineAvatarListItem:
+                    id: reset_default_button
+                    text: 'Reset to defaults'
+                    IconLeft:
+                        icon: 'backup-restore'
+
         StatusBar:
             id: status_bar

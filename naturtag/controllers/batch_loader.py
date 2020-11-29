@@ -45,7 +45,7 @@ class BatchRunner(EventDispatcher):
         self.runner_callback = runner_callback
         self.worker_callback = worker_callback
 
-    def add_batch(self, items: Iterable, **kwargs: Dict):
+    def add_batch(self, items: Iterable, **kwargs):
         """Add a batch of items to the queue (from another thread)
 
         Args:

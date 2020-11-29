@@ -82,6 +82,12 @@
 					IconLeftWidget:
 						icon: 'settings'
 				OneLineIconListItem:
+					text: 'Cache'
+					on_press:
+						app.switch_screen('cache')
+					IconLeftWidget:
+						icon: 'content-save-edit'
+				OneLineIconListItem:
 					text: 'Exit'
 					on_press:
 						app.stop()

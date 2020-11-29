@@ -7,7 +7,7 @@ from kivy.clock import Clock
 from naturtag.app import get_app, alert
 from naturtag.constants import MAX_DISPLAY_HISTORY
 from naturtag.controllers import Controller, TaxonBatchLoader
-from naturtag.inat_metadata import get_user_taxa
+from naturtag.inat_metadata import get_observed_taxa
 from naturtag.widgets import StarButton, TaxonListItem
 
 logger = getLogger().getChild(__name__)
@@ -34,10 +34,10 @@ class TaxonSelectionController(Controller):
         self.taxon_history_list = screen.history_tab.ids.taxon_history_list
         self.frequent_taxa_ids = {}
         self.frequent_taxa_list = screen.frequent_tab.ids.frequent_taxa_list
-        self.frequent_taxa_list.sort_key = self.get_frequent_taxon_idx
-        self.user_taxa_ids = {}
-        self.user_taxa_map = {}
-        self.user_taxa_list = screen.user_tab.ids.user_taxa_list
+        self.set_taxon_sort_key(self.frequent_taxa_list, self.frequent_taxa_ids)
+        self.observed_taxa_ids = {}
+        self.observed_taxa_list = screen.observed_tab.ids.observed_taxa_list
+        self.set_taxon_sort_key(self.observed_taxa_list, self.observed_taxa_ids)
         self.starred_taxa_ids = []
         self.starred_taxa_map = {}
         self.starred_taxa_list = screen.starred_tab.ids.starred_taxa_list
@@ -46,27 +46,35 @@ class TaxonSelectionController(Controller):
         Clock.schedule_once(lambda *x: asyncio.run(self.init_stored_taxa()), 1)
 
     async def init_stored_taxa(self):
-        """ Load taxon history, starred, and frequently viewed items """
-        logger.info('Loading stored taxa')
-        stored_taxa = get_app().stored_taxa
-        self.taxon_history_ids, self.starred_taxa_ids, self.frequent_taxa_ids = stored_taxa
-        self.user_taxa_ids = self.get_user_taxa()
+        """Load taxon history, starred, and frequently viewed items"""
+        logger.info('Taxon: Loading stored taxa')
+        (
+            self.taxon_history_ids,
+            self.starred_taxa_ids,
+            self.frequent_taxa_ids,
+            self.observed_taxa_ids,
+        ) = get_app().settings_controller.stored_taxa
+
+        # Refresh observed taxa, if expired
+        if get_app().settings_controller.is_observed_taxa_expired():
+            logger.info('Taxon: Observed taxa expired')
+            self.refresh_observed_taxa()
 
         # Collect all the taxon IDs we need to load
-        unique_history = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[
+        unique_history_ids = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[
             :MAX_DISPLAY_HISTORY
         ]
         starred_taxa_ids = self.starred_taxa_ids[::-1]
         top_frequent_ids = list(self.frequent_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
-        top_user_ids = list(self.user_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
+        top_observed_ids = list(self.observed_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
         total_taxa = sum(
             map(
                 len,
                 (
-                    unique_history,
+                    unique_history_ids,
                     self.starred_taxa_ids,
-                    top_user_ids,
                     top_frequent_ids,
+                    top_observed_ids,
                 ),
             )
         )
@@ -86,16 +94,19 @@ class TaxonSelectionController(Controller):
 
         # Start loading batches of TaxonListItems
         logger.info(
-            f'Taxon: Loading {len(unique_history)} unique taxa from history'
+            f'Taxon: Loading {len(unique_history_ids)} unique taxa from history'
             f' (from {len(self.taxon_history_ids)} total)'
         )
-        loader.add_batch(unique_history, parent=self.taxon_history_list)
+        loader.add_batch(unique_history_ids, parent=self.taxon_history_list)
         logger.info(f'Taxon: Loading {len(starred_taxa_ids)} starred taxa')
-        loader.add_batch(starred_taxa_ids, parent=self.starred_taxa_list)
+        loader.add_batch(starred_taxa_ids, parent=self.starred_taxa_list, highlight_observed=False)
         logger.info(f'Taxon: Loading {len(top_frequent_ids)} frequently viewed taxa')
         loader.add_batch(top_frequent_ids, parent=self.frequent_taxa_list)
-        logger.info(f'Taxon: Loading {len(top_user_ids)} user-observed taxa')
-        loader.add_batch(top_user_ids, parent=self.user_taxa_list)
+        logger.info(
+            f'Taxon: Loading {len(top_observed_ids)} user-observed taxa'
+            f' (from {len(self.observed_taxa_ids)} total)'
+        )
+        loader.add_batch(top_observed_ids, parent=self.observed_taxa_list)
 
         loader.start_thread()
 
@@ -118,15 +129,6 @@ class TaxonSelectionController(Controller):
         self.frequent_taxa_ids.setdefault(taxon_id, 0)
         self.frequent_taxa_ids[taxon_id] += 1
         self.frequent_taxa_list.sort()
-
-    @staticmethod
-    def get_user_taxa():
-        username = get_app().username
-        # TODO: Show this alert only when clicking on tab instead
-        if not username:
-            alert('Please enter iNaturalist username on Settings page')
-            return {}
-        return get_user_taxa(username)
 
     def add_star(self, taxon_id: int):
         """ Add a taxon to Starred list """
@@ -183,7 +185,47 @@ class TaxonSelectionController(Controller):
         self.starred_taxa_list.remove_widget(item)
         self.starred_taxa_list.add_widget(item, len(self.starred_taxa_list.children))
 
-    def get_frequent_taxon_idx(self, list_item) -> int:
-        """ Get sort index for frequently viewed taxa (by number of views, descending) """
-        num_views = self.frequent_taxa_ids.get(list_item.taxon.id, 0)
-        return num_views * -1  # Effectively the same as reverse=True
+    # TODO: Only refresh if 'expired'
+    def refresh_observed_taxa(self):
+        """Get all user-observed taxa, if a username has been provided"""
+        username = get_app().settings_controller.username
+        # TODO: Show this alert only when clicking on tab instead
+        if not username:
+            alert('Please enter iNaturalist username on Settings page')
+            return {}
+
+        self.observed_taxa_ids = get_observed_taxa(
+            username,
+            include_casual=get_app().settings_controller.inaturalist.get('casual_observations'),
+        )
+        self.set_taxon_sort_key(self.observed_taxa_list, self.observed_taxa_ids)
+        get_app().settings_controller.update_observed_taxa(self.observed_taxa_ids)
+
+    def refresh_observed_taxa_tab(self):
+        """Get all user-observed taxa and reload all items into tab"""
+        self.refresh_observed_taxa()
+        Clock.schedule_once(lambda *x: asyncio.run(self.load_observed_taxa()))
+
+    async def load_observed_taxa(self):
+        top_observed_ids = list(self.observed_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
+
+        loader = TaxonBatchLoader()
+        self.start_progress(len(top_observed_ids), loader)
+        self.observed_taxa_list.clear_widgets()
+        logger.info(f'Taxon: loading {len(top_observed_ids)} user-observed taxa')
+        loader.add_batch(top_observed_ids, parent=self.observed_taxa_list)
+
+        loader.bind(on_complete=lambda *args: self.observed_taxa_list.sort())
+        loader.start_thread()
+
+    @staticmethod
+    def set_taxon_sort_key(taxon_list, taxon_mapping):
+        """Set a sort index for taxa (by number of views or observations, descending).
+        Only applies to dicts of ``{taxon_id: rank}``
+        """
+
+        def sort_idx(list_item) -> int:
+            rank = taxon_mapping.get(list_item.taxon.id, 0)
+            return rank * -1  # Effectively the same as reverse=True
+
+        taxon_list.sort_key = sort_idx

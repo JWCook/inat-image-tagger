@@ -1,0 +1,48 @@
+<CacheScreen>:
+    name: 'cache'
+
+    BoxLayout:
+        orientation: 'vertical'
+        ScrollViewY:
+            MDList:
+                size_hint_min_x: 400
+                size_hint_max_x: 700
+                OneLineListItem:
+                    font_style: 'H5'
+                    text: 'Cache stats'
+                ThreeLineListItem:
+                    id: cache_size_output
+                    text: 'Calculating cache size...'
+
+                OneLineListItem:
+                OneLineListItem:
+                    font_style: 'H5'
+                    text: 'Cache controls'
+                ThreeLineAvatarListItem:
+                    id: refresh_observed_taxa_button
+                    text: 'Refresh user observations'
+                    secondary_text: 'Get current list of species observed by you'
+                    IconLeft:
+                        icon: 'refresh'
+                ThreeLineAvatarListItem:
+                    id: clear_request_cache_button
+                    text: 'Clear request cache'
+                    secondary_text: 'Clear all cached HTTP request data before scheduled expiration'
+                    IconLeft:
+                        icon: 'delete'
+                ThreeLineAvatarListItem:
+                    id: clear_thumbnail_cache_button
+                    text: 'Clear thumbnail cache'
+                    secondary_text: 'Clear all cached thumbnails'
+                    IconLeft:
+                        icon: 'delete'
+                ThreeLineAvatarListItem:
+                    id: clear_history_button
+                    text: 'Clear history'
+                    secondary_text: 'Clear history of viewed taxa and most frequently viewed taxa'
+                    IconLeft:
+                        icon: 'delete'
+
+
+        StatusBar:
+            id: status_bar

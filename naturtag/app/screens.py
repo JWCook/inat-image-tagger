@@ -27,6 +27,10 @@ class Root(BoxLayout):
     pass
 
 
+class CacheScreen(MDScreen):
+    pass
+
+
 class ImageSelectionScreen(MDScreen):
     pass
 
@@ -49,6 +53,7 @@ class ObservationScreen(MDScreen):
 
 SCREENS = {
     HOME_SCREEN: ImageSelectionScreen,
+    'cache': CacheScreen,
     'settings': SettingsScreen,
     'metadata': MetadataViewScreen,
     'taxon': TaxonScreen,

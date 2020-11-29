@@ -30,7 +30,7 @@ class PhotoContextMenuItem(AutoHideMenuItem):
 
     @property
     def metadata(self):
-        return self.parent.ref.metadata
+        return self.parent.ref.metadata_config
 
 
 class ListContextMenuItem(AutoHideMenuItem):

@@ -81,8 +81,8 @@ class TaxonSearchController(Controller):
             'min_rank': self.min_rank_input.text.strip(),
             'max_rank': self.max_rank_input.text.strip(),
             'per_page': 30,
-            'locale': get_app().locale,
-            'preferred_place_id': get_app().preferred_place_id,
+            'locale': get_app().settings_controller.locale,
+            'preferred_place_id': get_app().settings_controller.preferred_place_id,
         }
         return {k: v for k, v in params.items() if v}
 

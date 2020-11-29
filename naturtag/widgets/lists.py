@@ -1,12 +1,19 @@
 from typing import Union
 
 from kivy.core.clipboard import Clipboard
-from kivymd.uix.list import MDList, ILeftBody, ILeftBodyTouch, OneLineListItem
-from kivymd.uix.list import ThreeLineAvatarIconListItem
+from kivymd.uix.list import (
+    MDList,
+    IconRightWidget,
+    ILeftBody,
+    ILeftBodyTouch,
+    IRightBodyTouch,
+    OneLineListItem,
+    ThreeLineAvatarIconListItem,
+)
 from kivymd.uix.selectioncontrol import MDSwitch
 from kivymd.uix.textfield import MDTextFieldRound
 
-from naturtag.app import alert
+from naturtag.app import alert, get_app
 from naturtag.models import Taxon
 from naturtag.widgets import CachedAsyncImage, Tab
 
@@ -26,7 +33,11 @@ class SortableList(MDList):
             self.add_widget(child)
 
 
-class SwitchListItem(ILeftBodyTouch, MDSwitch):
+class SwitchListItemLeft(ILeftBodyTouch, MDSwitch):
+    """ Switch that works as a list item """
+
+
+class SwitchListItemRight(IRightBodyTouch, MDSwitch):
     """ Switch that works as a list item """
 
 
@@ -41,6 +52,7 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
         self,
         taxon: Union[Taxon, int, dict] = None,
         disable_button: bool = False,
+        highlight_observed: bool = True,
         **kwargs,
     ):
         if not taxon:
@@ -64,8 +76,11 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
             **kwargs,
         )
 
-        # Select the associated taxon when this list item is pressed
+        # Add thumbnail
         self.add_widget(ThumbnailListItem(source=taxon.thumbnail_url or taxon.icon_path))
+        # Add user icon if taxon has been observed by the user
+        if highlight_observed and get_app().is_observed(taxon.id):
+            self.add_widget(IconRightWidget(icon='account-search'))
 
     def _on_touch_down(self, instance, touch):
         """ Copy text on right-click """

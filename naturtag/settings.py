@@ -1,4 +1,6 @@
 """ Basic utilities for reading and writing settings from config files """
+from datetime import datetime
+from dateutil.parser import parse as parse_date
 from collections import Counter, OrderedDict
 from logging import getLogger
 from os import makedirs
@@ -22,7 +24,7 @@ def read_settings() -> Dict[str, Any]:
     """
     if not isfile(CONFIG_PATH):
         reset_defaults()
-    logger.info(f'Reading settings from {CONFIG_PATH}')
+    logger.info(f'Settings: Reading settings from {CONFIG_PATH}')
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
@@ -36,10 +38,12 @@ def write_settings(new_config: Dict[str, Any]):
     # First re-read current config, in case it changed on disk (manual edits)
     # And update on a per-section basis so we don't overwrite with an empty section
     settings = read_settings()
-    logger.info(f'Writing settings to {CONFIG_PATH}')
+    logger.info(f'Settings: Writing settings to {CONFIG_PATH}')
     for k, v in new_config.items():
+        logger.debug(f'Settings: Writing {k}={v}')
         settings.setdefault(k, {})
         settings[k].update(v)
+    logger.info('Settings: Done')
 
     with open(CONFIG_PATH, 'w') as f:
         yaml.safe_dump(settings, f)
@@ -47,12 +51,11 @@ def write_settings(new_config: Dict[str, Any]):
 
 def reset_defaults():
     """ Reset settings to defaults """
-    logger.info(f'Resetting {CONFIG_PATH} to defaults')
+    logger.info(f'Settings: Resetting {CONFIG_PATH} to defaults')
     makedirs(DATA_DIR, exist_ok=True)
     copyfile(DEFAULT_CONFIG_PATH, CONFIG_PATH)
 
 
-# TODO: Is there a better file format for taxon history than just a plain text file? JSON list? sqlite?
 # TODO: Separately store loaded history, new history for session; only write (append) new history
 def read_stored_taxa() -> Dict:
     """Read taxon view history, starred, and frequency
@@ -69,6 +72,7 @@ def read_stored_taxa() -> Dict:
     stored_taxa.setdefault('history', [])
     stored_taxa.setdefault('starred', [])
     stored_taxa['frequent'] = convert_int_dict(stored_taxa.get('frequent', {}))
+    stored_taxa['observed'] = convert_int_dict(stored_taxa.get('observed', {}))
     return stored_taxa
 
 
@@ -82,22 +86,36 @@ def write_stored_taxa(stored_taxa: Dict):
     stored_taxa["frequent"] = OrderedDict(Counter(stored_taxa["history"]).most_common())
 
     logger.info(
-        f'Writing stored taxa: {len(stored_taxa["history"])} history items, '
+        'Settings: Writing stored taxa: '
+        f'{len(stored_taxa["history"])} history items, '
         f'{len(stored_taxa["starred"])} starred items, '
-        f'{len(stored_taxa["frequent"])} frequent items'
+        f'{len(stored_taxa["frequent"])} frequent items, '
+        f'{len(stored_taxa["observed"])} observed items'
     )
     with open(STORED_TAXA_PATH, 'w') as f:
         json.dump(stored_taxa, f, indent=4)
+    logger.info('Settings: Done')
 
 
-def convert_int_dict(int_dict):
-    """  Convery JSOn string keys to ints """
-    return {int(k): int(v) for k, v in int_dict.items() if _is_int(k) and _is_int(v)}
+def convert_int_dict(int_dict) -> Dict[int, int]:
+    """Convert JSON string keys to ints"""
+    return {try_int(k): try_int(v) for k, v in int_dict.items()}
 
 
-def _is_int(value):
+def try_int(value):
     try:
-        int(value)
-        return True
+        return int(value)
     except (TypeError, ValueError):
-        return False
+        return value
+
+
+def is_expired(timestamp, expiry_hours):
+    """Determine if a timestamp is older than a given expiration length"""
+    try:
+        last_updated = parse_date(timestamp)
+    except (TypeError, ValueError):
+        return True
+
+    delta = datetime.now() - last_updated
+    elapsed_hours = delta.total_seconds() / 60 / 60
+    return int(elapsed_hours) >= expiry_hours
