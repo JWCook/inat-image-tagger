@@ -2,6 +2,7 @@ import click
 from click_help_colors import HelpColorsCommand
 
 from naturtag.image_glob import glob_paths
+from naturtag.inat_metadata import strip_url
 from naturtag.tagger import tag_images
 from re import compile, DOTALL, MULTILINE
 
@@ -18,9 +19,8 @@ def colorize_help_text(text):
     return text
 
 
-def strip_url(ctx, param, value):
-    """ If a URL is provided containing an ID, return just the ID """
-    return int(value.split('/')[-1].split('-')[0]) if value else None
+def _strip_url(ctx, param, value):
+    return strip_url(value)
 
 
 @click.command(cls=HelpColorsCommand, help_headers_color='blue', help_options_color='cyan')
@@ -31,8 +31,8 @@ def strip_url(ctx, param, value):
               help='Generate Darwin Core metadata')
 @click.option('-h', '--hierarchical', is_flag=True,
               help='Generate pipe-delimited hierarchical keywords')
-@click.option('-o', '--observation-id', help='Observation ID or URL', callback=strip_url)
-@click.option('-t', '--taxon-id', help='Taxon ID or URL', callback=strip_url)
+@click.option('-o', '--observation-id', help='Observation ID or URL', callback=_strip_url)
+@click.option('-t', '--taxon-id', help='Taxon ID or URL', callback=_strip_url)
 @click.option('-x', '--create-xmp', is_flag=True,
               help="Create XMP sidecar file if it doesn't already exist")
 @click.argument('image_paths', nargs=-1)

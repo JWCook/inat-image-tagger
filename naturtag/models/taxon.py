@@ -113,6 +113,10 @@ class Taxon:
         return self._parent_taxa
 
     @property
+    def parent_taxa_ids(self) -> List:
+        return [taxon.id for taxon in self.parent_taxa]
+
+    @property
     def parent(self):
         """ Return immediate parent, if any """
         return self.parent_taxa[-1] if self.parent_taxa else None
@@ -132,10 +136,13 @@ class Taxon:
             self._child_taxa.sort(key=get_child_idx)
         return self._child_taxa
 
+    @property
+    def child_taxa_ids(self) -> List:
+        return [taxon.id for taxon in self.child_taxa]
+
 
 def get_icon_path(id: int) -> Optional[str]:
     """ An iconic function to return an icon for an iconic taxon """
     if id not in ICONISH_TAXA:
         id = 0
-        print('NONICONIC:', id)
     return f'{ATLAS_APP_ICONS}/{ICONISH_TAXA[id]}'

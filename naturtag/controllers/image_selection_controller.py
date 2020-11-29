@@ -1,23 +1,19 @@
 import asyncio
-import json
 from logging import getLogger
 
-from kivy.properties import ListProperty, StringProperty, ObjectProperty
-
 from naturtag.app import alert, get_app
+from naturtag.controllers import Controller, ImageBatchLoader
 from naturtag.image_glob import get_images_from_paths
-from naturtag.inat_metadata import get_taxon_and_obs_from_metadata
-from naturtag.models.meta_metadata import MetaMetadata
 from naturtag.tagger import tag_images
-from naturtag.thumbnails import get_thumbnail
 from naturtag.widgets import ImageMetaTile
 
 logger = getLogger().getChild(__name__)
 
 
-class ImageSelectionController:
+class ImageSelectionController(Controller):
     """ Controller class to manage image selector screen """
-    def __init__(self, screen, **kwargs):
+    def __init__(self, screen):
+        super().__init__(screen)
         self.context_menu = screen.context_menu
         self.inputs = screen
         self.image_previews = screen.image_previews
@@ -35,9 +31,6 @@ class ImageSelectionController:
         # Other widget events
         self.inputs.taxon_id_input.bind(on_text_validate=self.on_taxon_id)
         self.inputs.clear_button.bind(on_release=self.clear)
-        # self.inputs.debug_button.bind(on_release=self.get_state)
-        # self.inputs.debug_button.bind(on_release=self.open_table)
-        # self.inputs.debug_button.bind(on_release=lambda *x: get_app().show_progress())
         self.inputs.load_button.bind(on_release=self.add_file_chooser_images)
         self.inputs.run_button.bind(on_release=self.run)
         self.file_chooser.bind(on_submit=self.add_file_chooser_images)
@@ -50,42 +43,28 @@ class ImageSelectionController:
         """ Add one or more files and/or dirs selected via a FileChooser """
         self.add_images(self.file_chooser.selection)
 
-    def add_images(self, paths):
-        """ Add one or more files and/or dirs, with deduplication """
-        results = asyncio.run(self.load_images(paths))
-        self.select_first_result(results)
-
     def add_image(self, path):
         """ Add an image to the current selection """
         self.add_images([path])
 
+    def add_images(self, paths):
+        """ Add one or more files and/or dirs, with deduplication """
+        asyncio.run(self.load_images(paths))
+
     async def load_images(self, paths):
-        return await asyncio.gather(*[
-            self.load_image(path=path)
-            for path in get_images_from_paths(paths, recursive=self.input_dict['recursive'])
-        ])
+        # Determine images to load, ignoring duplicates
+        images = get_images_from_paths(paths, recursive=self.input_dict['recursive'])
+        new_images = list(set(images) - set(self.file_list))
+        logger.info(f'Main: Loading {len(new_images)} ({len(images) - len(new_images)} already loaded)')
+        if not new_images:
+            return
+        self.file_list.extend(new_images)
 
-    # TODO: Use tasks to load incremental results in the UI
-    async def load_image(self, path):
-        if path in self.file_list:
-            return None, None
-
-        # Add to file list
-        logger.info(f'Main: Adding image {path}')
-        self.file_list.append(path)
-        self.file_list.sort()
-
-        # Add thumbnail to image preview screen
-        metadata = MetaMetadata(path)
-        img = ImageMetaTile(metadata, source=get_thumbnail(path))
-        img.bind(on_touch_down=self.on_image_click)
-        self.image_previews.add_widget(img)
-
-        # Run a search using any relevant tags we found
-        # TODO: async HTTP requests
-        taxon, observation = get_taxon_and_obs_from_metadata(metadata)
-        await asyncio.sleep(0)
-        return taxon, observation
+        # Start batch loader + progress bar
+        loader = ImageBatchLoader()
+        self.start_progress(len(new_images), loader)
+        loader.add_batch(new_images, parent=self.image_previews)
+        loader.start_thread()
 
     def open_native_file_chooser(self, dirs=False):
         """ A bit of a hack; uses a hidden tkinter window to open a native file chooser dialog """
@@ -104,24 +83,6 @@ class ImageSelectionController:
 
     def select_observation_from_photo(self, observation_id):
         self.inputs.observation_id_input.text = str(observation_id)
-
-    def select_first_result(self, results):
-        """ Select the first taxon and/or observations discovered from tags, if any """
-        if not results or not any(results):
-            return
-        taxa, observations = zip(*results)
-
-        taxon = next(filter(None, taxa), None)
-        if taxon:
-            self.select_taxon_from_photo(taxon['id'])
-            get_app().select_taxon(taxon_dict=taxon, if_empty=True)
-
-        # TODO: Display this info in the UI after observation search/view screens are implemented
-        observation = next(filter(None, observations), None)
-        if observation:
-            self.select_observation_from_photo(observation['id'])
-            logger.debug('Main: ' + json.dumps(observation, indent=4))
-        #     get_app().select_observation(observation_dict=observation, if_empty=True)
 
     def remove_image(self, image):
         """ Remove an image from file list and image previews """
@@ -199,6 +160,7 @@ class ImageSelectionController:
         logger.info(f'Main: Tagging {len(self.file_list)} images with metadata for {selected_id}')
 
         metadata_settings = get_app().metadata
+        # TODO: Handle write errors (like file locked) and show dialog
         all_metadata, _, _ = tag_images(
             self.input_dict['observation_id'],
             self.input_dict['taxon_id'],
@@ -220,16 +182,3 @@ class ImageSelectionController:
         """ Handle entering a taxon ID and pressing Enter """
         get_app().switch_screen('taxon')
         get_app().select_taxon(id=int(input.text))
-
-    # TODO: for testing only
-    # from kivy.metrics import dp
-    # from kivymd.uix.datatables import MDDataTable
-    # @staticmethod
-    # def open_table(self):
-    #     MDDataTable(
-    #         column_data=[
-    #             ("No.", dp(30)),  ("Column 1", dp(30)), ("Column 2", dp(30)),
-    #             ("Column 3", dp(30)), ("Column 4", dp(30)), ("Column 5", dp(30)),
-    #         ],
-    #         row_data=[(f"{i + 1}", "2.23", "3.65", "44.1", "0.45", "62.5") for i in range(50)],
-    #     ).open()

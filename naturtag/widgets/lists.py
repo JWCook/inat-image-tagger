@@ -1,3 +1,5 @@
+from typing import Union
+
 from kivy.core.clipboard import Clipboard
 from kivymd.uix.list import MDList, ILeftBody, ILeftBodyTouch, OneLineListItem
 from kivymd.uix.list import ThreeLineAvatarIconListItem
@@ -31,22 +33,25 @@ class TextInputListItem(OneLineListItem, MDTextFieldRound):
     """ Text input that works as a list item """
 
 
-# class TaxonListItem(ThreeLineAvatarIconListItem, HideableTooltip):
 class TaxonListItem(ThreeLineAvatarIconListItem):
     """ Class that displays condensed taxon info as a list item """
     def __init__(
             self,
-            taxon: Taxon=None,
-            taxon_id: int=None,
-            parent_tab: Tab=None,
-            disable_button: bool=False,
+            taxon: Union[Taxon, int, dict] = None,
+            disable_button: bool = False,
             **kwargs,
     ):
-        if not taxon and not taxon_id:
+        if not taxon:
             raise ValueError('Must provide either a taxon object or ID')
+        if isinstance(taxon, int):
+            taxon = Taxon.from_id(taxon)
+        elif isinstance(taxon, dict):
+            taxon = Taxon.from_dict(taxon)
+        self.taxon = taxon
+
+        # Set click event unless disabled
         if not disable_button:
             self.bind(on_touch_down=self._on_touch_down)
-        taxon = taxon or Taxon.from_id(taxon_id)
         self.disable_button = disable_button
 
         super().__init__(
@@ -54,22 +59,10 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
             text=taxon.name,
             secondary_text=taxon.rank,
             tertiary_text=taxon.preferred_common_name,
-            # TODO: Need to fine-tune tooltip behavior before enabling again
-            # tooltip_text=(
-            #     f'ID: {taxon.id}\n'
-            #     f'Ancestry: {truncate(taxon.ancestry_str)}\n'
-            #     f'Children: {len(taxon.child_taxa)}'
-            # ),
-            # is_visible_callback=self.is_visible,
             **kwargs,
         )
 
-        # Save info about the tab this list item belongs to, if any
-        self.tab_id = parent_tab.uid if parent_tab else None
-        self.tab_list = parent_tab.parent.parent if parent_tab else None
-
         # Select the associated taxon when this list item is pressed
-        self.taxon = taxon
         self.add_widget(ThumbnailListItem(source=taxon.thumbnail_url or taxon.icon_path))
 
     def _on_touch_down(self, instance, touch):
@@ -81,13 +74,6 @@ class TaxonListItem(ThreeLineAvatarIconListItem):
             alert('Copied to clipboard')
         else:
             super().on_touch_down(touch)
-
-    # def is_visible(self):
-    #     """ If this item belongs to a tab, determine if that tab is currently selected """
-    #     return (
-    #         self.tab_id is None or self.tab_list is None or  # Not in a tab; always show
-    #         self.tab_id == self.tab_list.current_slide.uid  # In selected tab
-    #     )
 
 
 class ThumbnailListItem(CachedAsyncImage, ILeftBody):

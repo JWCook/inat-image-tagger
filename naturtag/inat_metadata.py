@@ -2,6 +2,7 @@
 from logging import getLogger
 from os import makedirs
 from os.path import dirname
+from typing import Tuple, Optional
 
 import requests
 import requests_cache
@@ -216,3 +217,24 @@ def convert_dwc_to_xmp(dwc):
     # Format as XMP tags
     return {_format_term(k): v for k, v in dwr.items() if _include_term(k)}
 
+
+def strip_url(value: str) -> Optional[int]:
+    """ If a URL is provided containing an ID, return just the ID """
+    try:
+        return int(value.split('/')[-1].split('-')[0]) if value else None
+    except (TypeError, ValueError):
+        return None
+
+
+def strip_url_by_type(value: str) -> Tuple[Optional[int], Optional[int]]:
+    """ If a URL is provided containing an ID, return just the ID, and indicate whether it was a
+    taxon or observation URL (if possible).
+
+    Returns:
+        taxon_id, observation_id
+    """
+    id = strip_url(value)
+    return (
+        id if 'taxa' in value else None,
+        id if 'observation' in value else None
+    )

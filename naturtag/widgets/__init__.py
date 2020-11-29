@@ -20,4 +20,5 @@ from naturtag.widgets.labels import HideableTooltip, TooltipLabel
 from naturtag.widgets.tabs import Tab
 from naturtag.widgets.lists import SortableList, SwitchListItem, TextInputListItem, TaxonListItem, ThumbnailListItem
 from naturtag.widgets.menus import ObjectContextMenu, AutoHideMenuItem, PhotoContextMenuItem, ListContextMenuItem
+from naturtag.widgets.progress_bar import LoaderProgressBar
 from naturtag.widgets.taxon_autocomplete import TaxonAutocompleteSearch

@@ -1,9 +1,9 @@
 import asyncio
 from logging import getLogger
 
-from kivy.clock import Clock
 from pyinaturalist.node_api import get_taxa
 from naturtag.constants import ICONIC_TAXA, RANKS
+from naturtag.controllers import Controller, TaxonBatchLoader
 from naturtag.models import Taxon
 from naturtag.app import get_app
 from naturtag.widgets import DropdownTextField, IconicTaxaIcon
@@ -11,9 +11,10 @@ from naturtag.widgets import DropdownTextField, IconicTaxaIcon
 logger = getLogger().getChild(__name__)
 
 
-class TaxonSearchController:
+class TaxonSearchController(Controller):
     """ Controller class to manage taxon search """
     def __init__(self, screen):
+        super().__init__(screen)
         self.search_tab = screen.search_tab
         self.search_results_tab = screen.search_results_tab
 
@@ -85,12 +86,16 @@ class TaxonSearchController:
         return {k: v for k, v in params.items() if v}
 
     async def update_search_results(self, results):
+        """ Add taxon info from response to search results tab """
+        loader = TaxonBatchLoader()
+        self.start_progress(len(results), loader)
         self.search_results_list.clear_widgets()
-        for taxon_dict in results:
-            item = get_app().get_taxon_list_item(
-                taxon=Taxon.from_dict(taxon_dict), parent_tab=self.search_results_tab)
-            self.search_results_list.add_widget(item)
+
+        logger.info(f'Taxon: loading {len(results)} search results')
+        loader.add_batch(results, parent=self.search_results_list)
         self.search_results_tab.select()
+
+        loader.start_thread()
 
     def reset_all_search_inputs(self, *args):
         logger.info('Resetting search filters')

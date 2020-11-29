@@ -66,7 +66,9 @@ def get_thumbnail_if_exists(source: str) -> Optional[str]:
 
 def get_thumbnail_hash(source: str) -> str:
     """ Get a unique string based on the source to use as a filename or atlas resource ID """
-    return md5(source.encode()).hexdigest()
+    if not isinstance(source, bytes):
+        source = source.encode()
+    return md5(source).hexdigest()
 
 
 def get_thumbnail_size(size: str) -> Tuple[int, int]:
@@ -207,6 +209,6 @@ def flip_all(path: str):
 def to_monochrome(source, fmt):
     """ Convert an image to monochrome """
     img = Image.open(source)
-    img.convert('1')
+    img.convert(mode='1')
     img.save(source, format=fmt.replace('jpg', 'jpeg') if fmt else None)
     return source

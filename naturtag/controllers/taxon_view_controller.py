@@ -1,22 +1,24 @@
 import asyncio
 from logging import getLogger
 import webbrowser
+from typing import List
 
 from kivymd.uix.list import OneLineListItem, ThreeLineAvatarIconListItem, ImageLeftWidget
+from naturtag.controllers import Controller, TaxonBatchLoader
 
 from naturtag.models import Taxon, get_icon_path
 from naturtag.app import get_app
-from naturtag.widgets import StarButton, TaxonListItem
+from naturtag.widgets import StarButton
 
 logger = getLogger().getChild(__name__)
 
 
-class TaxonViewController:
+class TaxonViewController(Controller):
     """ Controller class to manage displaying info about a selected taxon """
     def __init__(self, screen):
-        self.screen = screen
+        super().__init__(screen)
 
-        # Other Controls
+        # Controls
         self.taxon_link = screen.taxon_links.ids.selected_taxon_link_button
         self.taxon_parent_button = screen.taxon_links.ids.taxon_parent_button
         self.taxon_parent_button.bind(on_release=lambda x: self.select_taxon(x.taxon.parent))
@@ -28,7 +30,7 @@ class TaxonViewController:
         self.taxon_children_label = screen.taxonomy_section.ids.taxon_children_label
         self.taxon_ancestors = screen.taxonomy_section.ids.taxon_ancestors
         self.taxon_children = screen.taxonomy_section.ids.taxon_children
-        self.basic_info = self.screen.basic_info_section
+        self.basic_info = screen.basic_info_section
 
     def select_taxon(self, taxon_obj: Taxon=None, taxon_dict: dict=None, id: int=None, if_empty: bool=False):
         """ Update taxon info display by either object, ID, partial record, or complete record """
@@ -56,8 +58,7 @@ class TaxonViewController:
         await asyncio.gather(
             self.load_photo_section(),
             self.load_basic_info_section(),
-            self.load_ancestors(),
-            self.load_children(),
+            self.load_taxonomy(),
         )
 
     async def load_photo_section(self):
@@ -111,29 +112,28 @@ class TaxonViewController:
             item = OneLineListItem(text=f'{label}: {value}')
             self.basic_info.add_widget(item)
 
-    async def load_ancestors(self):
-        """ Populate ancestors for the currently selected taxon """
-        logger.info('Taxon: Loading ancestors')
+    async def load_taxonomy(self):
+        """ Populate ancestors and children for the currently selected taxon """
+        total_taxa = len(self.selected_taxon.parent_taxa) + len(self.selected_taxon.child_taxa)
+
+        # Set up batch loader + event bindings
+        if self.loader:
+            self.loader.cancel()
+        self.loader = TaxonBatchLoader()
+        self.start_progress(total_taxa, self.loader)
+
+        # Start loading ancestors
+        logger.info(f'Taxon: Loading {len(self.selected_taxon.parent_taxa)} ancestors')
         self.taxon_ancestors_label.text = _get_label('Ancestors', self.selected_taxon.parent_taxa)
         self.taxon_ancestors.clear_widgets()
-        for taxon in self.selected_taxon.parent_taxa:
-            self.taxon_ancestors.add_widget(self.get_taxon_list_item(taxon=taxon))
-            await asyncio.sleep(0)
+        self.loader.add_batch(self.selected_taxon.parent_taxa_ids, parent=self.taxon_ancestors)
 
-    async def load_children(self):
-        """ Populate children for the currently selected taxon """
-        logger.info('Taxon: Loading children')
+        logger.info(f'Taxon: Loading {len(self.selected_taxon.child_taxa)} children')
         self.taxon_children_label.text = _get_label('Children', self.selected_taxon.child_taxa)
         self.taxon_children.clear_widgets()
-        for taxon in self.selected_taxon.child_taxa:
-            self.taxon_children.add_widget(self.get_taxon_list_item(taxon=taxon))
-            await asyncio.sleep(0)
+        self.loader.add_batch(self.selected_taxon.child_taxa_ids, parent=self.taxon_children)
 
-    def get_taxon_list_item(self, **kwargs):
-        """ Get a taxon list item, with thumbnail + info, that selects its taxon when pressed """
-        item = TaxonListItem(**kwargs)
-        item.bind(on_release=lambda x: self.select_taxon(x.taxon))
-        return item
+        self.loader.start_thread()
 
     def on_star(self, button):
         """ Either add or remove a taxon from the starred list """
@@ -143,5 +143,5 @@ class TaxonViewController:
             get_app().remove_star(self.selected_taxon.id)
 
 
-def _get_label(text, items):
+def _get_label(text: str, items: List) -> str:
     return text + (f' ({len(items)})' if items else '')

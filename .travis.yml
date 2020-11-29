@@ -1,17 +1,17 @@
 dist: bionic
 language: python
 python:
-- 3.7
-- 3.8
+  - 3.7
+  - 3.8
 before_install:
-- sudo apt-get update -y
-- sudo apt-get install -y exiv2
+  - sudo apt-get update -y
+  - sudo apt-get install -y exiv2
 install:
-- pip install -e '.[dev]'
+  - pip install -e '.[dev]'
 script:
-- naturtag -cdo 45524803
-- naturtag -cdt 48978
-- pytest
+  - naturtag -cdo 45524803
+  - naturtag -cdt 48978
+  - pytest ./test
 
 deploy:
   # PyPi: Master branch

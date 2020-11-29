@@ -8,8 +8,8 @@ from kivy.uix.image import AsyncImage
 from kivymd.uix.imagelist import SmartTile, SmartTileWithLabel
 
 from naturtag.app import alert
-from naturtag.models import get_icon_path
-from naturtag.thumbnails import get_thumbnail_if_exists, get_format
+from naturtag.models import get_icon_path, MetaMetadata
+from naturtag.thumbnails import get_thumbnail_if_exists, get_format, get_thumbnail
 from naturtag.app.cache import cache_async_thumbnail
 
 logger = getLogger().getChild(__name__)
@@ -86,9 +86,10 @@ class ImageMetaTile(SmartTileWithLabel):
     """ Class that contains an image thumbnail to display plus its associated metadata """
     metadata = ObjectProperty()
 
-    def __init__(self, metadata, **kwargs):
-        super().__init__(**kwargs)
-        self.metadata = metadata
+    def __init__(self, source, **kwargs):
+        super().__init__(source=get_thumbnail(source), **kwargs)
+        self.original_source = source
+        self.metadata = MetaMetadata(source)
 
     def copy_flickr_tags(self, *args):
         Clipboard.copy(self.metadata.keyword_meta.flickr_tags)

@@ -2,17 +2,21 @@ import asyncio
 from collections import OrderedDict
 from logging import getLogger
 
+from kivy.clock import Clock
+
 from naturtag.app import get_app
 from naturtag.constants import MAX_DISPLAY_HISTORY
-from naturtag.widgets import StarButton
+from naturtag.controllers import Controller, TaxonBatchLoader
+from naturtag.widgets import StarButton, TaxonListItem
 
 logger = getLogger().getChild(__name__)
 
 
-# TODO: Better name for this?
-class TaxonSelectionController:
+# TODO: Better name for this? Maybe 'TaxonQuickAccessController'?
+class TaxonSelectionController(Controller):
     """ Controller class to manage selecting stored taxa """
     def __init__(self, screen):
+        super().__init__(screen)
         # Tab references
         self.history_tab = screen.history_tab
         self.frequent_tab = screen.frequent_tab
@@ -34,7 +38,7 @@ class TaxonSelectionController:
         self.frequent_taxa_list.sort_key = self.get_frequent_taxon_idx
 
     def post_init(self):
-        asyncio.run(self.init_stored_taxa())
+        Clock.schedule_once(lambda *x: asyncio.run(self.init_stored_taxa()), 1)
 
     async def init_stored_taxa(self):
         """ Load taxon history, starred, and frequently viewed items """
@@ -42,30 +46,36 @@ class TaxonSelectionController:
         stored_taxa = get_app().stored_taxa
         self.taxon_history_ids, self.starred_taxa_ids, self.frequent_taxa_ids = stored_taxa
 
-        async def load_history():
-            unique_history = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[:MAX_DISPLAY_HISTORY]
-            logger.info(
-                f'Loading the most recent {len(unique_history)} unique taxa from history '
-                f'(from {len(self.taxon_history_ids)} total)',
-            )
-            for taxon_id in unique_history:
-                item = get_app().get_taxon_list_item(taxon_id=taxon_id, parent_tab=self.history_tab)
-                self.taxon_history_list.add_widget(item)
-                self.taxon_history_map[taxon_id] = item
+        # Collect all the taxon IDs we need to load
+        unique_history = list(OrderedDict.fromkeys(self.taxon_history_ids[::-1]))[:MAX_DISPLAY_HISTORY]
+        starred_taxa_ids = self.starred_taxa_ids[::-1]
+        top_frequent_ids = list(self.frequent_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]
+        total_taxa = sum(map(len, (unique_history, self.starred_taxa_ids, top_frequent_ids)))
 
-        async def load_starred():
-            logger.info(f'Loading {len(self.starred_taxa_ids)} starred taxa')
-            for taxon_id in self.starred_taxa_ids:
-                self.add_star(taxon_id)
+        # Start progress bar with a new batch loader
+        loader = TaxonBatchLoader()
+        self.start_progress(total_taxa, loader)
 
-        async def load_frequent():
-            logger.info(f'Loading {len(self.frequent_taxa_ids)} frequently viewed taxa')
-            for taxon_id in list(self.frequent_taxa_ids.keys())[:MAX_DISPLAY_HISTORY]:
-                item = get_app().get_taxon_list_item(
-                    taxon_id=taxon_id, parent_tab=self.frequent_tab)
-                self.frequent_taxa_list.add_widget(item)
+        # Add the finishing touches after all items have loaded
+        def index_list_items(*args):
+            for item in self.taxon_history_list.children:
+                self.taxon_history_map[item.taxon.id] = item
+            for item in self.starred_taxa_list.children:
+                self.bind_star(item)
+        loader.bind(on_complete=index_list_items)
 
-        await asyncio.gather(load_history(), load_starred(), load_frequent())
+        # Start loading batches of TaxonListItems
+        logger.info(
+            f'Taxon: Loading {len(unique_history)} unique taxa from history'
+            f' (from {len(self.taxon_history_ids)} total)'
+        )
+        loader.add_batch(unique_history, parent=self.taxon_history_list)
+        logger.info(f'Taxon: Loading {len(starred_taxa_ids)} starred taxa')
+        loader.add_batch(starred_taxa_ids, parent=self.starred_taxa_list)
+        logger.info(f'Taxon: Loading {len(top_frequent_ids)} frequently viewed taxa')
+        loader.add_batch(top_frequent_ids, parent=self.frequent_taxa_list)
+
+        loader.start_thread()
 
     def update_history(self, taxon_id: int):
         """ Update history + frequency """
@@ -76,7 +86,7 @@ class TaxonSelectionController:
             item = self.taxon_history_map[taxon_id]
             self.taxon_history_list.remove_widget(item)
         else:
-            item = get_app().get_taxon_list_item(taxon_id=taxon_id, parent_tab=self.history_tab)
+            item = get_app().get_taxon_list_item(taxon_id)
             self.taxon_history_map[taxon_id] = item
 
         self.taxon_history_list.add_widget(item, len(self.taxon_history_list.children))
@@ -93,25 +103,26 @@ class TaxonSelectionController:
         if taxon_id not in self.starred_taxa_ids:
             self.starred_taxa_ids.append(taxon_id)
 
-        item = get_app().get_taxon_list_item(
-            taxon_id=taxon_id,
-            parent_tab=self.starred_tab,
-            disable_button=True,
-        )
+        item = get_app().get_taxon_list_item(taxon_id, disable_button=True)
+        self.starred_taxa_list.add_widget(item, len(self.starred_taxa_list.children))
+        self.bind_star(item)
+
+    def bind_star(self, item: TaxonListItem):
+        """ Bind click events on a starred taxon list item, including an X (remove) button """
         item.bind(on_touch_down=self.on_starred_taxon_click)
-        # Add X (remove) button
-        remove_button = StarButton(taxon_id, icon='close')
+        remove_button = StarButton(item.taxon.id, icon='close')
         remove_button.bind(on_release=lambda x: self.remove_star(x.taxon_id))
         item.add_widget(remove_button)
-        self.starred_taxa_map[taxon_id] = item
-        self.starred_taxa_list.add_widget(item, len(self.starred_taxa_list.children))
+        self.starred_taxa_map[item.taxon.id] = item
 
+    # TODO: Also remove star from info section if this taxon happens to be currently selected
     def remove_star(self, taxon_id: int):
         """ Remove a taxon from Starred list """
         logger.info(f'Removing taxon from starred: {taxon_id}')
-        item = self.starred_taxa_map.pop(taxon_id)
-        self.starred_taxa_ids.remove(taxon_id)
-        self.starred_taxa_list.remove_widget(item)
+        if taxon_id in self.starred_taxa_map:
+            item = self.starred_taxa_map.pop(taxon_id)
+            self.starred_taxa_ids.remove(taxon_id)
+            self.starred_taxa_list.remove_widget(item)
 
     def is_starred(self, taxon_id: int) -> bool:
         """ Check if the specified taxon is in the Starred list """
