@@ -2,14 +2,17 @@ import attr
 from typing import List, Dict, Optional
 
 from pyinaturalist.node_api import get_taxa_by_id
+from naturtag.models import BaseModel, Photo, kwarg
 from naturtag.inat_metadata import get_rank_idx
-from naturtag.constants import TAXON_BASE_URL, ICONISH_TAXA, ATLAS_APP_ICONS, CC_LICENSES
+from naturtag.constants import TAXON_BASE_URL, ICONISH_TAXA, ATLAS_APP_ICONS
 
-kwarg = attr.ib(default=None)
+
+def convert_taxon_photos(taxon_photos):
+    return [Photo.from_dict(t['photo']) for t in taxon_photos]
 
 
 @attr.s
-class Taxon:
+class Taxon(BaseModel):
     """A data class containing information about a taxon, matching the schema of ``GET /taxa``
     from the iNaturalist API: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
@@ -18,7 +21,6 @@ class Taxon:
     :py:func:`get_taxa_autocomplete`
     """
 
-    id: int = kwarg
     ancestry: str = kwarg
     atlas_id: int = kwarg
     complete_rank: str = kwarg
@@ -30,7 +32,6 @@ class Taxon:
     listed_taxa_count: int = kwarg
     name: str = kwarg
     observations_count: int = kwarg
-    partial: bool = kwarg
     parent_id: int = kwarg
     rank: str = kwarg
     rank_level: int = kwarg
@@ -46,37 +47,30 @@ class Taxon:
     children: List[Dict] = attr.ib(factory=list)
     conservation_statuses: List[str] = attr.ib(factory=list)
     current_synonymous_taxon_ids: List[int] = attr.ib(factory=list)
-    default_photo: Dict = attr.ib(factory=dict)
+    default_photo: Photo = attr.ib(converter=Photo.from_dict, default=None)
     flag_counts: Dict = attr.ib(factory=dict)
     listed_taxa: List = attr.ib(factory=list)
-    taxon_photos: List = attr.ib(factory=list)
+    photos: List[Photo] = attr.ib(init=False, default=None)
+    taxon_photos: List[Photo] = attr.ib(converter=convert_taxon_photos, factory=list, repr=False)
 
     # Internal attrs managed by @properties
-    _parent_taxa: List = attr.ib(default=None)
-    _child_taxa: List = attr.ib(default=None)
+    _parent_taxa: List = attr.ib(init=False, default=None)
+    _child_taxa: List = attr.ib(init=False, default=None)
+
+    # Add aliases
+    def __attrs_post_init__(self):
+        self.photos = self.taxon_photos
 
     @classmethod
     def from_id(cls, id: int):
         """ Lookup and create a new Taxon object from an ID """
         r = get_taxa_by_id(id)
-        json = r['results'][0]
-        return cls.from_dict(json)
+        return cls.from_dict(r['results'][0])
 
-    @classmethod
-    def from_dict(cls, json: Dict, partial: bool = False):
-        """ Create a new Taxon object from all or part of an API response """
-        # Strip out Nones so we use our default factories instead (e.g. for empty lists)
-        attr_names = attr.fields_dict(cls).keys()
-        valid_json = {k: v for k, v in json.items() if k in attr_names and v is not None}
-        return cls(partial=partial, **valid_json)
-
-    # TODO: Seems like there should be a better way to do this.
     def update_from_full_record(self):
         t = Taxon.from_id(self.id)
-        self.ancestors = t.ancestors
-        self.children = t.children
-        self.default_photo = t.default_photo
-        self.taxon_photos = t.taxon_photos
+        for key in attr.fields_dict(self.__class__).keys():
+            setattr(self, key, getattr(t, key))
 
     @property
     def ancestry_str(self):
@@ -87,22 +81,8 @@ class Taxon:
         return get_icon_path(self.iconic_taxon_id)
 
     @property
-    def link(self) -> str:
+    def uri(self) -> str:
         return f'{TAXON_BASE_URL}/{self.id}'
-
-    @property
-    def photo_url(self) -> str:
-        return self.default_photo.get('medium_url')
-
-    @property
-    def has_cc_photo(self) -> bool:
-        """ Determine if there is a default photo with a Creative Commons license """
-        license = self.default_photo.get('license_code', '').upper()
-        return license in CC_LICENSES and self.photo_url
-
-    @property
-    def thumbnail_url(self) -> str:
-        return self.default_photo.get('square_url')
 
     @property
     def parent_taxa(self) -> List:
@@ -130,10 +110,10 @@ class Taxon:
             return get_rank_idx(taxon.rank), taxon.name
 
         if self._child_taxa is None:
-            # TODO: Determine if it's already a full record but the taxon has no children?
             if not self.children:
                 self.update_from_full_record()
-            self._child_taxa = [Taxon.from_dict(t, partial=True) for t in self.children]
+            print(self.children)
+            self._child_taxa = [Taxon.from_id(t['id']) for t in self.children]
             # Children may be different ranks; sort children by rank then name
             self._child_taxa.sort(key=get_child_idx)
         return self._child_taxa

@@ -27,7 +27,7 @@ from naturtag.constants import (
     StrTuple,
     IntTuple,
 )
-from naturtag.file_utils import format_file_size
+from naturtag.validation import format_file_size
 
 # Patch requests to use CachedSession for pyinaturalist API calls
 makedirs(dirname(CACHE_PATH), exist_ok=True)

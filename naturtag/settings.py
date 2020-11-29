@@ -1,6 +1,4 @@
 """ Basic utilities for reading and writing settings from config files """
-from datetime import datetime
-from dateutil.parser import parse as parse_date
 from collections import Counter, OrderedDict
 from logging import getLogger
 from os import makedirs
@@ -12,6 +10,7 @@ import json
 import yaml
 
 from naturtag.constants import DATA_DIR, CONFIG_PATH, DEFAULT_CONFIG_PATH, STORED_TAXA_PATH
+from naturtag.validation import convert_int_dict
 
 logger = getLogger().getChild(__name__)
 
@@ -95,27 +94,3 @@ def write_stored_taxa(stored_taxa: Dict):
     with open(STORED_TAXA_PATH, 'w') as f:
         json.dump(stored_taxa, f, indent=4)
     logger.info('Settings: Done')
-
-
-def convert_int_dict(int_dict) -> Dict[int, int]:
-    """Convert JSON string keys to ints"""
-    return {try_int(k): try_int(v) for k, v in int_dict.items()}
-
-
-def try_int(value):
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return value
-
-
-def is_expired(timestamp, expiry_hours):
-    """Determine if a timestamp is older than a given expiration length"""
-    try:
-        last_updated = parse_date(timestamp)
-    except (TypeError, ValueError):
-        return True
-
-    delta = datetime.now() - last_updated
-    elapsed_hours = delta.total_seconds() / 60 / 60
-    return int(elapsed_hours) >= expiry_hours

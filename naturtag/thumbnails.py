@@ -18,7 +18,7 @@ from naturtag.constants import (
     THUMBNAIL_SIZES,
     THUMBNAIL_DEFAULT_FORMAT,
 )
-from naturtag.file_utils import format_file_size
+from naturtag.validation import format_file_size
 
 logger = getLogger().getChild(__name__)
 
