@@ -14,7 +14,6 @@ extras_require = {  # noqa
         'pre-commit',
         'pytest>=5.0',
         'pytest-cov',
-        'Sphinx>=3.0',
         'kivy_examples',
         'memory_profiler',
         'prettyprinter',
