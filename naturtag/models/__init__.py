@@ -1,20 +1,6 @@
 """ Data classes with utilities for managing specific resources """
 # flake8: noqa: F401
 # TODO: simplified __str__ implementations
-from contextlib import contextmanager
-
-
-@contextmanager
-def suppress_version_error():
-    """Suppress pyexiv2 version check; it seems that it works on python 3.9
-    but error hasn't been updated
-    """
-    import platform
-
-    original_python_version = platform.python_version
-    platform.python_version = lambda: '3.8'
-    yield
-    platform.python_version = original_python_version
 
 
 # Imported in order of dependencies

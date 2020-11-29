@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8]
 
     steps:
       - uses: actions/checkout@v2
@@ -64,7 +64,7 @@ jobs:
       # - name: Run type checks
       #   run: mypy .
       - name: Generate code coverage report
-        run: pytest --cov --cov-report=term --cov-report=html
+        run: pytest --cov --cov-report=term --cov-report=html ./test
 #      - name: Send code coverage report to Coveralls
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

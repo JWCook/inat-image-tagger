@@ -1,10 +1,7 @@
 from logging import getLogger
 from os.path import isfile, splitext
 
-from naturtag.models import suppress_version_error
-
-with suppress_version_error():
-    from pyexiv2 import Image
+from pyexiv2 import Image
 
 # Minimal XML content needed to create a new XMP file; exiv2 can handle the rest
 NEW_XMP_CONTENTS = """
