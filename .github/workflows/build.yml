@@ -36,7 +36,7 @@ jobs:
           naturtag -cdo 45524803
           naturtag -cdt 48978
       - name: Run unit tests
-        run: pytest
+        run: pytest ./test
 
   analyze:
     runs-on: ubuntu-18.04

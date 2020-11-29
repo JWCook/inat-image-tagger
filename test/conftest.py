@@ -1,3 +1,3 @@
 import prettyprinter
 
-prettyprinter.install_extras()
+prettyprinter.install_extras(exclude=['django'])
