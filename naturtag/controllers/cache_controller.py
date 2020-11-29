@@ -6,7 +6,7 @@ from kivy.clock import Clock
 from naturtag.app import alert, get_app
 from naturtag.controllers import Controller
 from naturtag.inat_metadata import get_http_cache_size
-from naturtag.thumbnails import get_thumbnail_cache_size, delete_thumbnails
+from naturtag.thumbnails import delete_thumbnails, get_thumbnail_cache_size
 
 logger = getLogger(__name__)
 

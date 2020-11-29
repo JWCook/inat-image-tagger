@@ -3,9 +3,10 @@ from os.path import dirname, join
 from typing import Optional, Tuple
 
 from appdirs import user_data_dir
-from naturtag import __version__
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.request_params import CC_LICENSES, RANKS
+from pyinaturalist.request_params import CC_LICENSES, RANKS  # noqa: F401
+
+from naturtag import __version__
 
 # Resource directories
 PKG_DIR = dirname(dirname(__file__))
@@ -46,7 +47,7 @@ ALL_ATLASES = [ATLAS_APP_ICONS, ATLAS_TAXON_ICONS, ATLAS_TAXON_PHOTOS, ATLAS_LOC
 
 # Cache settings
 CACHE_PATH = join(DATA_DIR, 'inaturalist_api_cache')
-API_CACHE_EXPIRY_HOURS = 48
+API_CACHE_EXPIRY_HOURS = 0
 OBS_CACHE_EXPIRY_HOURS = 48
 CACHE_BACKEND = 'sqlite'
 

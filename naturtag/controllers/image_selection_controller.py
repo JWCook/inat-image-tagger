@@ -5,7 +5,6 @@ from naturtag.app import alert, get_app
 from naturtag.controllers import Controller, ImageBatchLoader
 from naturtag.image_glob import get_images_from_paths
 from naturtag.tagger import tag_images
-from naturtag.widgets import ImageMetaTile
 
 logger = getLogger().getChild(__name__)
 
@@ -76,7 +75,7 @@ class ImageSelectionController(Controller):
     def open_native_file_chooser(self, dirs=False):
         """ A bit of a hack; uses a hidden tkinter window to open a native file chooser dialog """
         from tkinter import Tk
-        from tkinter.filedialog import askopenfilenames, askdirectory
+        from tkinter.filedialog import askdirectory, askopenfilenames
 
         Tk().withdraw()
         # Tkinter does not have a single dialog that combines directory and file selection >:[
@@ -158,10 +157,10 @@ class ImageSelectionController(Controller):
     def run(self, *args):
         """ Run image tagging for selected images and input """
         if not self.file_list:
-            alert(f'Select images to tag')
+            alert('Select images to tag')
             return
         if not self.input_dict['observation_id'] and not self.input_dict['taxon_id']:
-            alert(f'Select either an observation or an organism to tag images with')
+            alert('Select either an observation or an organism to tag images with')
             return
         selected_id = (
             f'Observation ID: {self.input_dict["observation_id"]}'

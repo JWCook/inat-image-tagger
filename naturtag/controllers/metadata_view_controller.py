@@ -1,7 +1,5 @@
 import json
 
-from kivy.properties import StringProperty
-
 
 # TODO: This screen is pretty ugly. Ideally this would be a collection of DataTables.
 class MetadataViewController:

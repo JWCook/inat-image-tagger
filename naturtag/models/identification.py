@@ -1,8 +1,7 @@
+import attr
 from datetime import datetime
 from typing import List
 from uuid import UUID
-
-import attr
 
 from naturtag.models import BaseModel, Taxon, User, aliased_kwarg, kwarg, timestamp
 

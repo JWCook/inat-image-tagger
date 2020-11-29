@@ -1,4 +1,5 @@
 from logging import basicConfig
+from re import DOTALL, MULTILINE, compile
 
 import click
 from click_help_colors import HelpColorsCommand
@@ -6,7 +7,6 @@ from click_help_colors import HelpColorsCommand
 from naturtag.image_glob import glob_paths
 from naturtag.inat_metadata import strip_url
 from naturtag.tagger import tag_images
-from re import compile, DOTALL, MULTILINE
 
 CODE_BLOCK = compile(r'```\n(.+?)```\s*\n', DOTALL)
 CODE_INLINE = compile(r'`([^`]+?)`')

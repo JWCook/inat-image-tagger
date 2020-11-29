@@ -1,5 +1,5 @@
-from glob import glob
 from fnmatch import fnmatch
+from glob import glob
 from itertools import chain
 from logging import getLogger
 from os.path import expanduser, isdir, isfile, join

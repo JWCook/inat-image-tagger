@@ -6,18 +6,17 @@ from time import sleep
 from PIL import Image
 
 from naturtag.constants import (
-    ATLAS_TAXON_ICONS,
-    ATLAS_TAXON_PHOTOS,
     ATLAS_LOCAL_PHOTOS,
     ATLAS_MAX_SIZE,
-    CC_LICENSES,
-    THUMBNAILS_DIR,
+    ATLAS_TAXON_ICONS,
+    ATLAS_TAXON_PHOTOS,
+    ICONIC_TAXA,
     THUMBNAIL_SIZE_DEFAULT,
-    THUMBNAIL_SIZE_SM,
     THUMBNAIL_SIZE_LG,
+    THUMBNAIL_SIZE_SM,
+    THUMBNAILS_DIR,
 )
 from naturtag.image_glob import get_images_from_paths
-from naturtag.constants import ICONIC_TAXA
 from naturtag.models import Taxon
 from naturtag.thumbnails import generate_thumbnail_from_url, get_thumbnail_if_exists
 

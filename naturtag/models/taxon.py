@@ -1,10 +1,11 @@
 import attr
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 from pyinaturalist.node_api import get_taxa_by_id
-from naturtag.models import BaseModel, Photo, kwarg
+
+from naturtag.constants import ATLAS_APP_ICONS, ICONISH_TAXA, TAXON_BASE_URL
 from naturtag.inat_metadata import get_rank_idx
-from naturtag.constants import TAXON_BASE_URL, ICONISH_TAXA, ATLAS_APP_ICONS
+from naturtag.models import BaseModel, Photo, kwarg
 
 
 def convert_taxon_photos(taxon_photos):

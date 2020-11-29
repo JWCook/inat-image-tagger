@@ -23,14 +23,14 @@ from kivymd.app import MDApp
 from naturtag.app import alert
 from naturtag.app.screens import HOME_SCREEN, Root, load_screens
 from naturtag.constants import (
-    INIT_WINDOW_POSITION,
-    INIT_WINDOW_SIZE,
-    MD_PRIMARY_PALETTE,
-    MD_ACCENT_PALETTE,
     ATLAS_APP_ICONS,
     BACKSPACE,
     ENTER,
     F11,
+    INIT_WINDOW_POSITION,
+    INIT_WINDOW_SIZE,
+    MD_ACCENT_PALETTE,
+    MD_PRIMARY_PALETTE,
     TRIGGER_DELAY,
 )
 from naturtag.controllers import (

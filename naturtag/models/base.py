@@ -1,8 +1,7 @@
+import attr
 from dateutil.parser import parse as parse_date
 from logging import getLogger
-from typing import List, Dict
-
-import attr
+from typing import Dict, List
 
 aliased_kwarg = attr.ib(default=None, repr=False)
 kwarg = attr.ib(default=None)

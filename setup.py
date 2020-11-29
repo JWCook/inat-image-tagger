@@ -1,16 +1,24 @@
 from itertools import chain
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 from naturtag import __version__
 
-extras_require = {
+extras_require = {  # noqa
     'app': ['kivy>=1.11', 'kivymd~=0.104.1', 'kivy-garden.contextmenu', 'pygments'],
+    'build': ['coveralls', 'twine', 'wheel'],
     'dev': [
-        'black',
+        'black==20.8b1',
+        'flake8',
+        'isort',
+        'mypy',
+        'pre-commit',
+        'pytest>=5.0',
+        'pytest-cov',
+        'Sphinx>=3.0',
         'kivy_examples',
         'memory_profiler',
         'prettyprinter',
-        'pytest',
-        'Sphinx>=3.0',
+        'Sphinx~=3.2.1',
         'sphinx-rtd-theme',
         'sphinxcontrib-apidoc',
     ],

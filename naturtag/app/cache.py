@@ -1,17 +1,16 @@
 """ UI-specific utilities for image caching """
 from logging import getLogger
-from typing import Tuple
 
 from kivy.core.image import Image
 
+from naturtag.atlas import get_resource_path_if_exists
 from naturtag.thumbnails import (
-    get_thumbnail_hash,
-    get_thumbnail,
-    get_thumbnail_if_exists,
     generate_thumbnail_from_bytes,
+    get_thumbnail,
+    get_thumbnail_hash,
+    get_thumbnail_if_exists,
     to_monochrome,
 )
-from naturtag.atlas import get_resource_path_if_exists
 
 logger = getLogger().getChild(__name__)
 

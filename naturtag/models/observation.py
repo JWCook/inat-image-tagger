@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from pyinaturalist.node_api import get_observation
+
 from naturtag.constants import Coordinates
 from naturtag.models import BaseModel, Identification, Photo, Taxon, User, kwarg, timestamp
 from naturtag.validation import convert_coord_pair

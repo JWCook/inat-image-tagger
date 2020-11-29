@@ -21,7 +21,6 @@ from kivy.event import EventDispatcher
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 
-
 KV = '''\
 <RootLayout>:
     orientation: 'vertical'

@@ -4,7 +4,7 @@ from logging import getLogger
 
 from kivy.clock import Clock
 
-from naturtag.app import get_app, alert
+from naturtag.app import alert, get_app
 from naturtag.constants import MAX_DISPLAY_HISTORY
 from naturtag.controllers import Controller, TaxonBatchLoader
 from naturtag.inat_metadata import get_observed_taxa

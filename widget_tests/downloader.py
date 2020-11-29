@@ -9,7 +9,6 @@ from time import time
 import requests
 from kivy.clock import Clock
 from kivy.logger import LOG_LEVELS, Logger
-
 from kivy_garden.mapview.constants import CACHE_DIR
 
 if "MAPVIEW_DEBUG_DOWNLOADER" in environ:
