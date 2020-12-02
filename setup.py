@@ -44,7 +44,7 @@ setup(
         'Click>=7.0',
         'click-help-colors',
         'pillow>=7.0',
-        'pyexiv2',
+        'pyexiv2>=2.3.2',
         'python-dateutil',
         'pyinaturalist==0.12.0.dev68',
         'pyyaml',
