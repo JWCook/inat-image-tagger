@@ -14,10 +14,10 @@ def truncate(text: str) -> str:
 
 
 from naturtag.constants import MAX_LABEL_CHARS
+from naturtag.widgets.inputs import DropdownTextField, TextFieldWrapper
 from naturtag.widgets.autocomplete import AutocompleteSearch, DropdownContainer, DropdownItem
 from naturtag.widgets.buttons import StarButton, TooltipFloatingButton, TooltipIconButton
 from naturtag.widgets.images import CachedAsyncImage, IconicTaxaIcon, ImageMetaTile
-from naturtag.widgets.inputs import DropdownTextField, TextFieldWrapper
 from naturtag.widgets.labels import HideableTooltip, TooltipLabel
 from naturtag.widgets.lists import (
     SortableList,
